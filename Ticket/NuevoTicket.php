@@ -27,64 +27,64 @@ if($accion==$funcion){
     if($activo=="1") $checked="checked";
 }
 ?>
-    <head>
-        <meta charset="UTF-8"/>
-       
-       <link href="../boostrap/css/signin.css" rel="stylesheet">
-       </head>
-
-        <div class="row">
-              <div class="col-md-6 col-md-offset-3">
+ 
 
                 <h3>Ticket </h3>
+              <div class="col-md-6 col-md-offset-2">
+
                 <form id="Formulario" method="post" role="form">
                   <? if($accion=="Modifica".$modulo){ ?>
                    <div class="form-group">
-                     <span>ID</span>
+                     <label>ID</label>
                     <input type="text" name="Usucve" id="Usucve" disabled tabindex="1" class="form-control" placeholder="Id" value="<?= $clave ?>">
                   </div>  <? }?>
                    <div class="form-group">
-                     <span>Area</span>
+                     <label>Area</label>
                     <select class="form-control" id='area' name='area'>
                      <?= $consultas->generaCombo("Area",$seleccionado,$parametro) ?>
                     </select>
                   </div>
                    <div class="form-group">
-                     <span>Prioridad</span>
+                     <label>Prioridad</label>
                     <select class="form-control" id='prioridad' name='prioridad'>
                      <?= $consultas->generaCombo("Prioridad",$seleccionado,$parametro) ?>
                     </select>
                   </div>
 
                   <div class="form-group">
-                    <span>Titulo</span>
+                    <label>Titulo</label>
                     <input type="text" name="titulo" id="titulo" tabindex="1" class="form-control" placeholder="Titulo" value="<?= $titulo;?>">
+                  </div>
+
+                 <div>
+                   <label>Subir Imagen</label>
+                    <input id="Imagen" name="Imagen" class="file" type="file"  data-min-file-count="1" data-preview-file-type="text">
                   </div>
                    
                    <div class="form-group">
-                     <span>Descripcion</span>
-                      <textarea class="form-control" rows="5" id="descripcion"></textarea>
+                     <label>Descripcion</label>
+                      <textarea class="form-control" rows="5" id="descripcion" style="width: 574px;"></textarea>
                   </div>
 
-                 <div class="form-group">
-                   <span>Subir Imagen</span>
-                    <input id="Imagen" class="file" type="file"  data-min-file-count="1">
-                  </div>
                   
                    <? if($accion=="Modifica".$modulo){ ?> 
                     <div class="form-group">
-                       <span>Activo</span>
+                       <label>Activo</label>
                     <input type="checkbox" aria-label="Activo" name="Activo" id="Activo" tabindex="1" <?= $checked; ?>  >
                   </div>
                   <? } ?>
                   <div class="form-group"></div>
-
+              <? if($Tipousuario=="2"){ ?> 
                <div class="form-group">
                 <div class='input-group date'>
-                  <span>Fecha de Cierre</span>
-                    <input type='text' class="form-control" id="fecha" />
+                  <label>Fecha de Cierre</label>
+                    <input type='text'  id="fecha" readonly="true"/>
                     </div>
-                </div>
+                  <div class="form-group">
+                     <label>Observaciones para Resolver el Problema</label>
+                      <textarea class="form-control" rows="5" id="descripcion" style="width: 574px;"></textarea>
+                  </div>   
+                </div> <? } ?> 
 
                   <div class="form-group">
                     <div class="btn-group" role="group" aria-label="Acciones">
@@ -99,7 +99,13 @@ if($accion==$funcion){
                 </form> 
               </div>
             </div>
-             
+
+              <div class="col-md-6"></div>
+
+      
+
+
+
 
 <form id="frmModulos" name="frmModulos" action="" method="POST">
 			<input type="hidden" name="sesion" id="sesion" value="<?= $sesion; ?>">
@@ -157,17 +163,49 @@ $(function(){
      $('#Imagen').fileinput({
         language: 'es',
         overwriteInitial: true,
-        uploadUrl: 'otro',
-        showClose: false,
-        showCaption: false,
+        uploadUrl: 'upload.php',
+        autoReplace: true,
+        maxFileCount: 1,
+        uploadAsync: false,
+        overwriteInitial: true,
+
+       // previewFileType:'any'
+        browseOnZoneClick: true,
+
+        showCaption: true,
         showUpload: true,
-        showCaption: false,
-        maxFileSize: 1500,
-        browseLabel: 'subir Imagen',
+        showCaption: true,
+        maxFileSize: 600,
+       // showUpload: false,
+        maxFileSize: 2000,
+        uploadAsync: true,
+        browseLabel: 'Buscar Imagen',
         allowedFileExtensions : ['jpg','png'],
-        showPreview : true,
-        previewFileIcon: "<i class='glyphicon glyphicon-king'></i>"
+        //showPreview : false,
+        previewFileIcon: "<i class='glyphicon glyphicon-king'></i>",
+         initialPreview: [
+        "<img style='height:160px' src='../imagenes/1000/imagen.png'>",
+        ],
+         initialPreviewConfig: [
+        {caption: "Prueba.jpg", url: "/upload.php", key: 8}
+        ],
+        uploadExtraData: {
+        clave: "1000",
+        img_keywords: "happy, places",
+        }
+
+
+    }).on('fileuploaded', function(e, params) {
+    alert("subido coore")
+
+    }).on('fileclear', function(e, params) {
+       
+
     });
+
+
+
+
 
 });
 
