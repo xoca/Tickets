@@ -11,7 +11,7 @@ $funcion="Modifica".$modulo;  //Solo para modificar
 $Activo = $consultas->verificaSesion($sesion);
 //Sacar la clave del usuario logeado
 $Usuario = $consultas->DatosUsuarios($sesion);
-
+$row['tag']="default_Socio.jpg";
 if($accion==$funcion){
   //Vamos a traer todos los datos del Usuario  
     $checked="";
@@ -30,41 +30,49 @@ if($accion==$funcion){
  
 
                 <h3>Ticket </h3>
-              <div class="col-md-6 col-md-offset-2">
+              <div class="col-md-12">
 
                 <form id="Formulario" method="post" role="form">
                   <? if($accion=="Modifica".$modulo){ ?>
-                   <div class="form-group">
+                   <div class="row">
+                    <div class="col-md-2">
                      <label>ID</label>
-                    <input type="text" name="Usucve" id="Usucve" disabled tabindex="1" class="form-control" placeholder="Id" value="<?= $clave ?>">
-                  </div>  <? }?>
-                   <div class="form-group">
-                     <label>Area</label>
-                    <select class="form-control" id='area' name='area'>
-                     <?= $consultas->generaCombo("Area",$seleccionado,$parametro) ?>
-                    </select>
+                   </div><div class="col-md-4"> <input type="text" name="Usucve" id="Usucve" disabled tabindex="1" class="form-control" placeholder="Id" value="<?= $clave ?>">
                   </div>
-                   <div class="form-group">
+                  </div>  <? }?>
+                   <div class="row">
+                      <div class="col-md-4">
+                     <label>Area</label>
+                      <select class="form-control" id='area' name='area'>
+                       <?= $consultas->generaCombo("Area",$area,$parametro) ?>
+                      </select>
+                    </div>
+                  </div>
+                   <div class="row">
+                    <div class="col-md-4">
                      <label>Prioridad</label>
                     <select class="form-control" id='prioridad' name='prioridad'>
-                     <?= $consultas->generaCombo("Prioridad",$seleccionado,$parametro) ?>
-                    </select>
+                     <?= $consultas->generaCombo("Prioridad",$prioridad,$parametro) ?>
+                    </select> </div>
                   </div>
 
-                  <div class="form-group">
+                  <div class="row">
+                     <div class="col-md-4">
                     <label>Titulo</label>
                     <input type="text" name="titulo" id="titulo" tabindex="1" class="form-control" placeholder="Titulo" value="<?= $titulo;?>">
+                    </div>
                   </div>
-
-                 <div>
+                 <div class="row"> 
+                 <div class="col-md-11">
                    <label>Subir Imagen</label>
-                    <input id="Imagen" name="Imagen" class="file" type="file"  data-min-file-count="1" data-preview-file-type="text">
+                     <input id="Imagen" name="Imagen[]" class="file" type="file" multiple class="file-loading" data-preview-file-type="text" >
                   </div>
-                   
-                   <div class="form-group">
+                </div>
+                  <div class="row">
+                   <div class="col-md-12">
                      <label>Descripcion</label>
-                      <textarea class="form-control" rows="5" id="descripcion" style="width: 574px;"></textarea>
-                  </div>
+                      <textarea class="form-control" rows="5" id="descripcion" ></textarea>
+                  </div></div>
 
                   
                    <? if($accion=="Modifica".$modulo){ ?> 
@@ -117,6 +125,8 @@ if($accion==$funcion){
 
 
 <script type="text/javascript">
+var claveFoto="<?= $row['foto']; ?>";
+var NombreFoto="<?= $row['tag']; ?>";
 
 $(function(){
 
@@ -161,47 +171,101 @@ $(function(){
     $( "#fecha" ).datepicker();
 
      $('#Imagen').fileinput({
+         initialPreview: [
+                  <?= $previewImage; ?>
+                  ],
+  
+                 initialPreviewConfig: [
+                   <?= $claves_fotos ?>
+                ],
+                //initialPreviewAsData: true,
+                uploadUrl: 'upload.php',
+                deleteUrl: 'upload.php',
         language: 'es',
-        overwriteInitial: true,
-        uploadUrl: 'upload.php',
-        autoReplace: true,
-        maxFileCount: 1,
-        uploadAsync: false,
-        overwriteInitial: true,
+        allowedFileExtensions : ['jpg', 'png','jpeg'],        
+
+
+        overwriteInitial: false,
+        browseLabel: 'Agregar Imagen',
+        uploadLabel:'Subir Archivo',
+        maxFileSize: 20600,
+
+       
+        autoReplace: false,
+       // maxFileCount: 3,
+        uploadAsync: true,
+
 
        // previewFileType:'any'
-        browseOnZoneClick: true,
+        //browseOnZoneClick: false,
 
-        showCaption: true,
         showUpload: true,
-        showCaption: true,
-        maxFileSize: 600,
-       // showUpload: false,
-        maxFileSize: 2000,
-        uploadAsync: true,
-        browseLabel: 'Buscar Imagen',
-        allowedFileExtensions : ['jpg','png'],
-        //showPreview : false,
-        previewFileIcon: "<i class='glyphicon glyphicon-king'></i>",
-         initialPreview: [
-        "<img style='height:160px' src='../imagenes/1000/imagen.png'>",
-        ],
-         initialPreviewConfig: [
-        {caption: "Prueba.jpg", url: "/upload.php", key: 8}
-        ],
-        uploadExtraData: {
-        clave: "1000",
-        img_keywords: "happy, places",
-        }
+ 
+         deleteExtraData: {
+                      accion:"Delete",
+                      clave:$("#Imagen").attr("value"),
+                      nombre:NombreFoto,
+                      socio: $("#socio").val()
+                 },
 
+                
+                uploadExtraData: {
+                  accion:"Upload",
+                  subaccion:"Socio",
+                  socio: $("#clave").val(),
+                  clave:$("#Imagen").attr("value")
+                }
 
-    }).on('fileuploaded', function(e, params) {
-    alert("subido coore")
-
-    }).on('fileclear', function(e, params) {
        
 
-    });
+    }).on('fileuploaded', function(e, params) {
+              var nombre=params.response["nombre"];
+                  NameFile+=nombre;
+                  IdFile+=params.response['clave']+",";
+
+                 $("#NombreFile").val(nombre);
+                 //$(".input-group-btn").disabled();
+                 $("#Imagen").attr("value",IdFile);
+               // console.log('File sorted params', params);
+
+    }).on('fileclear', function(e, params) {
+     campos={
+                  "accion":"Delete",
+                  "nombre":$("#lbImagen").html(),
+                  "clave": $("#Imagen").attr("value"),
+                  "subaccion": "Socio",
+                  "socio" : $("#socio").val()
+                  
+                };
+
+                 $.post('upload.php',campos,function(datos){
+                     var res = eval('(' + datos + ')');
+                     if(res.respuesta=="OK"){
+                        
+                       alert("Se han Eliminado el Archivo.");
+                     }else{
+                      alert(res.mensaje);
+                     }
+                    
+                  }).fail(function (){
+                    alert("error ");
+
+                    //evento.preventDefault();  
+                  }).on('filebatchuploadcomplete',function(){
+                    alert("Prueba de complete");
+
+                  }).on('filebatchuploadsuccess',function(){
+                    alert("prueba de succes");
+
+                  });
+
+        
+         });
+
+
+
+
+
 
 
 

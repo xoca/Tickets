@@ -23,12 +23,13 @@ $Activo = $objDB->verificaSesion($sesion);
           <a class="navbar-brand" href="#">LOGO</a>
         </div>
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-      <ul class="nav navbar-nav navbar-right">
+     <ul class="nav navbar-nav navbar-right">
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><?= $usuario;?> <span class="caret"></span></a>
           <ul class="dropdown-menu">
-            <li><a  id='cerrar'>Cerrar Sesion</a></li>
+            <li><a  id='Perfil' url='Perfil.php' submodulo='ModificaUsuarios' modulo='Usuarios' clave='<?= $usucve?>' onclick='modulos(this);'>Editar Perfil</a></li>
              <li role="separator" class="divider"></li>
+              <li><a  id='cerrar'>Cerrar Sesion</a></li>
           </ul>
         </li>
       </ul>
@@ -51,7 +52,7 @@ $Activo = $objDB->verificaSesion($sesion);
 
         <div class="col-xs-12 col-sm-9">
           <p class="pull-right visible-xs">
-            <button type="button" class="btn btn-primary btn-xs" data-toggle="offcanvas">Prueba de nada que es</button>
+            <button type="button" class="btn btn-primary btn-xs" data-toggle="offcanvas">button</button>
           </p>
           <div class="panel panel-default">
             <div class="panel-body" id='modulo'>
@@ -75,6 +76,7 @@ $Activo = $objDB->verificaSesion($sesion);
       <input type="hidden" name="sesion" id="sesion" value="<? print $sesion;?>">
       <input type="hidden" name="Usuario" id="Usuario" value="<? print $usuario ?>">
       <input type="hidden" name="correo" id="correo" value="<? print $correo ?>">
+      <input type="hidden" name="Usucve" id="Usucve" value="<? print $usucve ?>">
       <input type="hidden" name="Usucve" id="Usucve" value="<? print $usucve ?>">
     </form>
 

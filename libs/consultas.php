@@ -1,5 +1,8 @@
 ﻿<?php
 	date_default_timezone_set('America/Mexico_City'); 
+	include_once("querys.php");
+
+
 	class Consultas{		
 	
 	
@@ -11,12 +14,14 @@
 	
 	
 		var $db;
+		var $errorQry;
+		var $querys;
 		
-		
-		function Consultas()
-		{	
-			
-				$this->db = mysql_connect( $this->server, $this->user, $this->password);		
+		 
+		function __construct(){
+	
+
+			$this->db = mysql_connect( $this->server, $this->user, $this->password);		
 				$x = mysql_set_charset('utf8', $this->db);
 		
 			if( !$this->db ){
@@ -28,6 +33,11 @@
 			if( !$result ){
 				echo mysql_error( $this->db );				
 				return;
+			}else{
+				//Instanciamos la otra clase donde estan los querys
+				$this->querys=new querys();
+			
+			
 			}
 			
 					
@@ -35,7 +45,7 @@
 
 		function verificaUsuario($parametros)
 		{	
-			$query = "select UsuCve,concat(UsuNombre,' ',UsuApellidos) Nombre from usuarios U where UsuMail = '".$parametros[0]."' and UsuPassword = '".$parametros[1]."' and UsuActivo = '1'";
+			$query = "select UsuCve,UsuNombre Nombre from usuarios U where UsuMail = '".$parametros[0]."' and UsuPassword = '".$parametros[1]."' and UsuActivo = '1'";
 			$result = mysql_query($query) or die('Consulta fallida: ' . mysql_error());
 			return $fila = mysql_fetch_row($result);			
 		}
@@ -43,7 +53,7 @@
 
 		function DatosUsuarios($parametros)
 		{	
-			$query = "select U.UsuCve,concat(UsuNombre,' ',UsuApellidos) Nombre from usuarios U,sesion s where U.UsuCve=s.UsuCve and s.SesCve ='".$sid."' ";
+			$query = "select U.UsuCve,UsuNombre Nombre from usuarios U,sesion s where U.UsuCve=s.UsuCve and s.SesCve ='".$sid."' ";
 			$result = mysql_query($query) or die('Consulta fallida: ' . mysql_error());
 			return $fila = mysql_fetch_row($result);			
 		}
@@ -100,10 +110,40 @@
 				return $datos=mysql_fetch_array($consulta);
 			}else{
 				
-				return "Ha Ocurrido un Error con los datos del Usuario";
+				return "Sin Registros";
 			}
 
 		}
+
+			function Modificacion($qry,$clave){
+
+			$usuarios=querys::Consultas($qry,array($clave));
+			$consulta=mysql_query($usuarios,$this->db) or die("Ha ocurrido un error al buscar los datos".mysql_error());
+			
+			if(mysql_num_rows($consulta)>0){
+				return $datos=mysql_fetch_array($consulta);
+			}else{
+				
+				return "Sin Registros";
+			}
+
+		}
+
+
+		function DatosM($qry,$clave){
+			$usuarios=querys::Consultas($qry,array($clave));
+			$resultado=mysql_query($usuarios,$this->db) or die ('<div class="alert alert-danger alert-dismissible" role="alert">Ha Ocurrido un Error al tratar de generar los datos</div>'.mysql_error());//.mysql_error().' '.$qryname);
+			
+		
+			if(mysql_num_rows($resultado)>0){
+				return array(1,$resultado);
+			}else{
+				
+				return array(0,'<div class="alert alert-danger alert-dismissible" role="alert">Sin Registros</div>');
+			}
+
+		}	
+
 		
 
 		function verificaSesion($sid)
@@ -112,8 +152,8 @@
 			$result = mysql_query($query,$this->db) or die('Consulta fallida: ' . mysql_error());
 			if ( mysql_num_rows( $result ) > 0 )
 			{
-				$permisos = mysql_fetch_array( $result);
-				return true;
+				$permisos = mysql_fetch_row( $result);
+				return $permisos;
 			}
 			else{
 				echo '<meta http-equiv="refresh" content="2;url=index.php" />';
@@ -129,7 +169,7 @@
 		function generaCombo( $qryName, $selected, $parametros)
 		{			
 			
-			$qry=$this->Querys($qryName,$parametros);
+			$qry=querys::Consultas($qryName,$parametros); 
 			$consulta=mysql_query($qry,$this->db) or die("Ha ocurrido un error al buscar los datos".mysql_error());
 			$cboResultado="";
 		if ( mysql_num_rows( $consulta ) > 0 ){
@@ -143,28 +183,44 @@
 	
 		}
 
-			///Funcion llenara los campos para los listados de la funcion Edita de inicio.js
-			function generaGrid($qryName,$parametrosqry,$varqry){			
+		///Funcion llenara los campos para los listados de la funcion Edita de inicio.js
+			function Paginador($qryName,$parametrosqry,$varqry){			
 			
-			$qry=$this->Querys($qryName,$parametrosqry);
-			//print "-".$qry."-";
+			$qry=querys::Consultas($qryName,$parametrosqry);
+
+				
+			
+
 			$numrows=0;
-			$consulta=mysql_query($qry,$this->db) or die("Ha ocurrido un erro".mysql_error());
+			$consulta=mysql_query($qry,$this->db) or die("Ha ocurrido un erro qyNormal-->".$qry." ".mysql_error());
 			$campos=mysql_num_fields($consulta);
-			$count_query   = mysql_query("select count(*) numero FROM usuarios ",$this->db);
+			$count=querys::Consultas($qryName."Count",$parametrosqry);
+			$count_query   = mysql_query($count,$this->db) or die("Ha Ocurrido un Error qryCount -->".$qry." ".mysql_error());
+			
 			if ($row= mysql_fetch_array($count_query)){$numrows = $row['numero'];}
+
+				
+		
 			$total_pages = ceil($numrows/$varqry[2]);
-			$pagin=$this->paginate('',$varqry[0], $total_pages,$varqry[1]);
-					
+			
+			//Funcion del Paginador
+			$pagin=$this->paginate($varqry[3],$varqry[0], $total_pages,$varqry[1]);
+				
+
 			$grid="<tr>";
+			$ediccion=$campos-1;
 			if ( mysql_num_rows( $consulta ) > 0 ){
 				while($row=mysql_fetch_array($consulta)){
-					for($i=0;$i<$campos;$i++){
-					//siempre el primer registro contendra la clave le pondremos la Url de Edicion
+					for($i=0;$i<=$campos;$i++){
+				
+
+
 						if($i==0){
-			$grid.= "<td><a href='#' id='".$row[$i]."' modulo='".$varqry[3]."' accion='Modificar' clave='".$row[$i]."' onclick='Editar(this)' >".$row[$i]."</a></td>";
+						$grid.= "<td><a href='#' id='".$row[$i]."' modulo='".$varqry[4]."' url='Modificar' clave='".$row[$i]."' onclick='Editar(this)' >".$row[$i]."</a></td>";
 						}else
 						$grid.= "<td>".$row[$i]."</td>";
+
+
 					}
 					$grid.="</tr><tr>";
 				}
@@ -172,11 +228,12 @@
 			}
 				$grid.="</tr>";
 				//Envio los datos de la tabla y del Paginador
-				return $grid."::".$pagin;
+				return $grid."::".$pagin."::".$qry;
 
 				
 	
 		}
+
 
 			function begin(){
 		      $null = mysql_query("START TRANSACTION", $this->db);
@@ -191,17 +248,18 @@
 		      return mysql_query("ROLLBACK", $this->db);
 		   }
 
-		   function transaction($q_array){
+
+		   function transaccion($q_array){
 		         $retval = 1;
 
-		      $this->begin();
+		        $this->begin();
 
 		         foreach($q_array as $qa){
-		           
-		            $result = mysql_query($qa['query'], $this->db) or die('Ha ocurrido un error en la consulta'.mysql_error().$qa['query']);
+		            $result = mysql_query($qa['query'],$this->db);
 		             if($result==0){
-		            	$retval = 0;
-		            }
+		             		 $this->errorQry=mysql_error().$qa['query'];
+		           			 $retval = 0;
+		             }
 		             
 		         }
 
@@ -209,42 +267,22 @@
 		         $this->rollback();
 		         return false;
 		      }else{
+		      	 //$clave=mysql_insert_id($this->db);
+		      	 $clave= mysql_fetch_row($result);
 		         $this->commit();
-		         return true;
+		        
+		         if($clave!=""){
+		         	return $clave;
+		         }else 
+		         	return true;
 		      }
+		      
 		   }
-
-
-		function Querys($qry,$parametros){
-		   	switch($qry){
-		   		case "tipoUsuario":
-		   		return $qry="select TipoCve clave,TipoDesc descripcion from tipousuario where Tipoestatus=1";
-		   		break;
-
-		   		case "ListadoUsuarios":
-		   		return $qry="select UsuCve clave,concat(UsuNombre,' ',UsuApellidos) nombre,UsuMail correo from usuarios order by UsuCve LIMIT ".$parametros[0].",".$parametros[1];
-		   		break;
-
-		   		case "Usuarios":
-		   		return $qry="select * from usuarios where UsuCve=".$parametros[0];
-		   		break;
-
-		   		case "Area":
-		   		return $qry="select AreaCve,AreaDesc from area where AreaEstatus=1";
-		   		break;
-
-		   		case "Prioridad":
-		   		return $qry="select PrioCve,PrioDesc from prioridad where PrioEstatus=1";
-		   		break;
-		   		
-		   		}
-			
-			}
 
 
 
 	
-function paginate($reload, $page, $tpages, $adjacents) {
+function paginate($accion, $page, $tpages, $adjacents) {
 	$prevlabel = "&lsaquo; Anterior";
 	$nextlabel = "Siguiente &rsaquo;";
 	$out = '<ul class="pagination pagination-large">';
@@ -254,15 +292,15 @@ function paginate($reload, $page, $tpages, $adjacents) {
 	if($page==1) {
 		$out.= "<li class='disabled'><span><a>$prevlabel</a></span></li>";
 	} else if($page==2) {
-		$out.= "<li><span><a href='javascript:void(0);' onclick='CargarFiltro(1)'>$prevlabel</a></span></li>";
+		$out.= "<li><span><a href='javascript:void(0);' onclick=CargarFiltro(1,'".$accion."',parametros)>$prevlabel</a></span></li>";
 	}else {
-		$out.= "<li><span><a href='javascript:void(0);' onclick='CargarFiltro(".($page-1).")'>$prevlabel</a></span></li>";
+		$out.= "<li><span><a href='javascript:void(0);' onclick=CargarFiltro(".($page-1).",'".$accion."',parametros)>$prevlabel</a></span></li>";
 
 	}
 	
 	// primero 
 	if($page>($adjacents+1)) {
-		$out.= "<li><a href='javascript:void(0);' onclick='CargarFiltro(1)'>1</a></li>";
+		$out.= "<li><a href='javascript:void(0);' onclick=CargarFiltro(1,'".$accion."',parametros)>1</a></li>";
 	}
 	// interval
 	if($page>($adjacents+2)) {
@@ -277,9 +315,9 @@ function paginate($reload, $page, $tpages, $adjacents) {
 		if($i==$page) {
 			$out.= "<li class='active'><a>$i</a></li>";
 		}else if($i==1) {
-			$out.= "<li><a href='javascript:void(0);' onclick='CargarFiltro(1)'>$i</a></li>";
+			$out.= "<li><a href='javascript:void(0);' onclick=CargarFiltro(1,'".$accion."',parametros)>$i</a></li>";
 		}else {
-			$out.= "<li><a href='javascript:void(0);' onclick='CargarFiltro(".$i.")'>$i</a></li>";
+			$out.= "<li><a href='javascript:void(0);' onclick=CargarFiltro(".$i.",'".$accion."',parametros)>$i</a></li>";
 		}
 	}
 
@@ -292,25 +330,24 @@ function paginate($reload, $page, $tpages, $adjacents) {
 	// Atras
 
 	if($page<($tpages-$adjacents)) {
-		$out.= "<li><a href='javascript:void(0);' onclick='CargarFiltro($tpages)'>$tpages</a></li>";
+		$out.= "<li><a href='javascript:void(0);' onclick=CargarFiltro($tpages,'".$accion."',parametros)>$tpages</a></li>";
 	}
 
 	// siguiente pagina
 
 	if($page<$tpages) {
-		$out.= "<li><span><a href='javascript:void(0);' onclick='CargarFiltro(".($page+1).")'>$nextlabel</a></span></li>";
+		$out.= "<li><span><a href='javascript:void(0);' onclick=CargarFiltro(".($page+1).",'".$accion."',parametros)>$nextlabel</a></span></li>";
 	}else {
 		$out.= "<li class='disabled'><span><a>$nextlabel</a></span></li>";
 	}
 	
 	$out.= "</ul>";
 	return $out;
-}
+
+	}
 			
 		
-	}
-
-
+}
 
  function array_to_json( $array ){
 

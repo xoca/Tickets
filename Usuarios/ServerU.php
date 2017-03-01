@@ -6,7 +6,7 @@ $clave      = $_POST["clave"];
 $accion     = $_POST["accion"];
 $modulo     = $_POST["modulo"];  
 $submodulo  = $_POST["submodulo"];
-$Usucve    = $_POST["usucve"];
+$Usucve     = $_POST["usucve"];
 
 
  
@@ -30,13 +30,14 @@ $Usucve    = $_POST["usucve"];
 
   if( $accion == "NuevoUsuarios" ){
         $query = array ( array("query" => "select @clave:=(select ifnull(max(Usucve),0)+1 from usuarios)"),
-         array("query" => "insert into usuarios values(@clave,'".$_POST["nombre"]."','".$_POST["apellidos"]."', '".$_POST["email"]."', '".$_POST["password"]."','".$_POST["tipoUsuario"]."',1)"),
+         array("query" => "insert into usuarios values(@clave,'".$_POST["nombre"]."','".$_POST["apellidos"]."', '".$_POST["email"]."', '".$_POST["password"]."',1,'".$_POST["tipoUsuario"]."')"),
          /*Aqui van los modulos de ticket para crear y listar*/
           array("query" => "insert into seguridad values(@clave,1,0,null)"),
            array("query" => "insert into seguridad values(@clave,1,1, null)"),
            array("query" => "insert into seguridad values(@clave,1,4, null)"),
            /*bitacora*/
-            array("query" => "insert into bitacora values(@clave,".$Usucve.",now(), '".$accion."',@clave,'".$_POST['modulo']."')"),
+            array("query" => "select @claveB:=(select ifnull(max(bitCve),0)+1 from bitacora)"),
+            array("query" => "insert into bitacora values(@claveB,".$Usucve.",now(), '".$accion."',@clave,'".$_POST['modulo']."')"),
          );
          $qry=$bd->transaction($query); 
         
@@ -66,3 +67,5 @@ $Usucve    = $_POST["usucve"];
 
 
 ?>
+
+

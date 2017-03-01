@@ -17,13 +17,25 @@ $db = new Consultas();
         }
 
         else{
-         $html.= '<li><a href="#" id="'.$modulo.'-'.$row["modsub"].'" modcve="'.$row["modcve"].'" modulo="'.$modulo.'" accion="'.$row['modurl'].'" onclick="menu_Horizontales(this);">'.$row["moddesc"].'</a></li>';
+         $html.= '<li><a href="#" id="'.$modulo.$row["modsub"].'" submodulo="'.$row["modsub"].'"  url="'.$row['modurl'].'" modcve="'.$row["modcve"].'" modulo="'.$modulo.'"  onclick="modulos(this);">'.$row["moddesc"].'</a></li>';
         }  
 
         $first++;                   
     }
      return $html;
 }
+
+
+
+/*
+  $html.=  '<li><a href="#" id="'.$modulo.'-'.$row["modsub"].'" modcve="'.$row["modcve"].'" modulo="'.$modulo.'" accion="'.$row['modurl'].'" onclick="menu_Horizontales(this);">'.$row["moddesc"].' <span class="sr-only">(current)</span></a></li>';
+  $modulo=$row["moddesc"];
+
+     $html.= '<li><a href="#" id="'.$modulo.'-'.$row["modsub"].'" modcve="'.$row["modcve"].'" modulo="'.$modulo.'" accion="'.$row['modurl'].'" onclick="menu_Horizontales(this);">'.$row["moddesc"].'</a></li>';
+ 
+
+*/
+
 
 
   ?>

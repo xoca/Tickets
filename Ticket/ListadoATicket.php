@@ -18,8 +18,11 @@ Listado de Ticket Abiertos</div>
     <thead>
     <tr>
      <th>Clave</th>
-     <th>Nombre</th>
-     <th>Correo</th>
+     <th>Titulo</th>
+     <th>Usuario</th>
+     <th>Area</th>
+     <th>Prioridad</th>
+     <th>status</th>
       </tr>
 </thead>
 
@@ -46,7 +49,12 @@ Listado de Ticket Abiertos</div>
 <script type="text/javascript">
 
 $(document).ready(function(){
-        CargarFiltro(1);
+     var parametros={
+        "nombre" : $("#nombre").val(),
+        "convenio"  : "-1"
+     };
+        CargarFiltro(1,"ListadoTicket",parametros);
+
       });
 
 </script>  

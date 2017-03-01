@@ -4,26 +4,46 @@ $sesion = $_POST['sesion'];
 $modulo = $_POST['modulo'];
 $accion = $_POST['accion'];
 $submodulo = $_POST['submodulo'];
+$modcve = $_POST['modcve'];
 $consultas = new Consultas();
 //Si no esta activo lo manda al Login.
 $Activo = $consultas->verificaSesion($sesion);
 
 ?>
 
+<div class="row">
+           
+               <div class="col-sm-3">
+                <strong>Nombre</strong>
+                   <input type="text"class="form-control" placeholder="Nombre" name="nombre" id="nombre">
+                </div>
+                
+                <div class="col-md-4">
+                  <br/>
+                 <button id="buscar" onclick="buscar();" class="btn btn-gris">Buscar</button>
+                </div>
+        <div class="col-md-4">
+            <a id="ModServicio"  url="ModServicio.php" submodulo="<?=$submodulo;?>" modcve="<?=$modcve;?>" modulo="<?=$modulo;?>" onclick="modulos(this);" href="#">Nuevo Servicio</a>
+        </div>               
+</div>
+
+<div class="row"><br></div>
+
 <div class="panel panel-default">
+
 <div class="panel-heading">
-Listado de Usuarios</div>
-<div class="panel-body" id="panelUsuarios">
+Listado de Servicios</div>
+<div class="panel-body" id="panelEmpleados">
 <table class="table table-striped table-hover" id="gridUsuarios">
     <thead>
     <tr>
      <th>Clave</th>
      <th>Nombre</th>
-     <th>Correo</th>
+     <th>Estatus</th>
       </tr>
 </thead>
 
-      <tbody id="bodyGridUsuarios">
+      <tbody id="bodyGrid">
       </tbody>
 </table>
 
@@ -39,7 +59,8 @@ Listado de Usuarios</div>
 			<input type="hidden" name="modulos" id="modulos" value="<? print $modulo;?>">
       <input type="hidden" name="accion" id="accion" value="<? print $accion;?>">
       <input type="hidden" name="submodulo" id="submodulo" value="<? print $submodulo;?>">
-      <input type="hidden" name="Usucve" id="Usucve" value="<? print $usucve;?>">
+      <input type="hidden" name="modcve" id="modcve" value="<? print $modcve;?>">
+      <input type="hidden" name="paginared" id="paginared" value="ModServicio">
 </form>
 
 
@@ -53,7 +74,7 @@ var parametros={
 
 $(document).ready(function(){
    
-        CargarFiltro(1,"ListadoUsuarios",parametros);
+        CargarFiltro(1,"ListadoServicios",parametros);
 
       });
 
@@ -65,7 +86,7 @@ $(document).ready(function(){
         "nombre" : $("#nombre").val(),
         "convenio"  : "-1"
     };
-        CargarFiltro(1,"ListadoUsuarios",parametros);
+        CargarFiltro(1,"ListadoServicios",parametros);
 
    }
 

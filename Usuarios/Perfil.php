@@ -13,7 +13,7 @@ $Activo = $consultas->verificaSesion($sesion);
 if($_POST['clave']!=""){ 
     //Vamos a traer todos los datos del Usuario  
     $checked="NADA";
-    $Usuarios=$consultas->ModificaUsuarios($clave);
+    $Usuarios=$consultas->$funcion($clave);
  
     $clave=$Usuarios['UsuCve'];
     $nombre=$Usuarios['UsuNombre'];
@@ -23,8 +23,6 @@ if($_POST['clave']!=""){
     $activo=$Usuarios['UsuActivo'];
     $seleccionado=$Usuarios['UsuTipo'];
     if($activo=="1") $checked="checked";
-}else{
-  $accion="NuevoUsuarios";
 }
 
 ?>
@@ -88,11 +86,10 @@ if($_POST['clave']!=""){
 
 <form id="frmModulos" name="frmModulos" action="Inicio.php" method="POST">
 			<input type="hidden" name="sesion" id="sesion" value="<?= $sesion; ?>">
-			<input type="hidden" name="modulos" id="modulos" value="Usuarios">
+			<input type="hidden" name="modulos" id="modulos" value="<?= $modulo; ?>">
       <input type="hidden" name="accion" id="accion" value="<?= $accion; ?>">
       <input type="hidden" name="submodulo" id="submodulo" value="<?= $submodulo; ?>">
       <input type="hidden" name="clave" id="clave" value="<?= $clave; ?>">
-      <input type="hidden" name="usuario" id="usuario" value="<?= $Activo[1]; ?>"> 
 </form>
 
 
@@ -104,7 +101,7 @@ $(function(){
   var Parametros = {   
         "sesion"    : $("#sesion").val(), 
         "modulo"    : $("#modulos").val(),
-        "submodulo" : "Listado"+$("#modulos").val(),
+        "submodulo"  : "Listado"+$("#modulos").val(),
         "accion"    : "Listado"+$("#modulos").val()
     }; 
 
@@ -113,7 +110,6 @@ $(function(){
         var datos = {   
         "sesion"    : $("#sesion").val(), 
         "clave"    : $("#Usucve").val(), 
-        "usucve"    : $("#usuario").val(), 
         "nombre"    : $("#nombre").val(),
         "apellidos" : $("#apellidos").val(), 
         "email"     : $("#email").val(), 

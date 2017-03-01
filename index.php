@@ -1,6 +1,6 @@
-<?php include_once("../libs/stylos.php"); ?>
-<? HTMLHeader("::Sistema de Ticket::"); ?>
-<link href="../boostrap/css/signin.css" rel="stylesheet">
+<?php include_once("libs/stylos.php"); ?>
+<? HTMLOGIN("::Sistema de Ticket::"); ?>
+<link href="boostrap/css/signin.css" rel="stylesheet">
 <div class="container">
       <div class="row">
       <div class="col-md-4 col-md-offset-4">
@@ -80,7 +80,7 @@
       </div>
     </div>
   </div>
-<form id="frmSesion" name="frmSesion" action="Inicio.php" method="POST">
+<form id="frmSesion" name="frmSesion" action="Inicio/Inicio.php" method="POST">
 			<input type="hidden" name="sesion" id="sesion" value="">
 			<input type="hidden" name="Usuario" id="Usuario" value="">
 			<input type="hidden" name="correo" id="correo" value="">
@@ -91,7 +91,7 @@
 
 
   <?php
-	 include_once("../libs/consultas.php");
+	 include_once("libs/consultas.php");
 	if ( isset($_POST["username"]) && isset($_POST["password"]) ) 
 	{
 

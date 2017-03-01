@@ -4,6 +4,7 @@ include ('pagination.php');
 $bd = new Consultas();
 $sesion       = $_POST["sesion"];
 $clave      = $_POST["clave"];
+$claveModulo      = $_POST["clavemodulo"];
 $accion     = $_POST["accion"];
 $modulo     = $_POST["modulo"];  
 $submodulo  = $_POST["submodulo"];
@@ -13,10 +14,10 @@ $Usucve    = $_POST["usucve"];
  
   if( $accion == "menu_horizontales" ){
     $html='<div class="list-group">';
-    $menu=$bd->menu_horizontal(array($sesion,$clave));
+    $menu=$bd->menu_horizontal(array($sesion,$claveModulo));
      while ($row = mysql_fetch_array($menu, MYSQL_BOTH)) {
         if($row['modsub']==0) $modulo=$row['moddesc'];
-        if($row['modsub']!=0) $html.='<a href="#" class="list-group-item" id="'.$row['modurl'].$modulo.'" modulo="'.$modulo.'" accion="'.$row['modurl'].'" onclick="modulos(this)">'.$row['moddesc'].'</a>';       
+        if($row['modsub']!=0) $html.='<a href="#" class="list-group-item" id="'.$modulo.$row["modsub"].'" url="'.$row['modurl'].'" modulo="'.$modulo.'"  onclick="modulos(this)">'.$row['moddesc'].'</a>';       
       }
 
      $html.='</div>';
@@ -32,23 +33,29 @@ $Usucve    = $_POST["usucve"];
 
 
 
-    //Accion tiene que llevar el mismo ListadoUsuarios
-    if( $accion == $submodulo ){
+
+
+   if( $_POST['accion'] == "Paginador" ){
+       $buscar=array("buscar"=>$_POST['parametros']);
         $page = (isset($_REQUEST['NumPagina']) && !empty($_REQUEST['NumPagina']))?$_REQUEST['NumPagina']:1;
-        
+        $qryName=$_POST['qry'];
         $per_page = 10; //la cantidad de registros que desea mostrar
         $limite_pag = 4; //brecha entre páginas después de varios adyacentes
         $offset = ($page - 1) * $per_page;
 
-        $grid=$bd->generaGrid($submodulo,array($offset,$per_page),array($page,$limite_pag,$per_page,$modulo));
+        ///Funcion Paginador en consultas nombredelQry,parametrosdelQry,parametrosAdicionales
+        $grid=$bd->Paginador($qryName,array($offset,$per_page,$buscar),array($page,$limite_pag,$per_page,$qryName,$modulo));
         $resultado=explode("::",$grid);
       
      
         $result['paginador']=$resultado[1];
         $result['datos']=$resultado[0];
-        
-      echo array_to_json($result);
-  }
+        //$result['qry']=$resultado[2];
+        echo  array_to_json($result);
+  
+    }
+
+
 
 
 
