@@ -161,7 +161,7 @@ if(isset($_POST['clave'])){
 				      	 <div class="col-md-4">
 				          	  <label>Tipo de Usuario</label>
 				          	<select id="cboTipo" name="cboTipo" class="form-control">
-							<?= $consultas->generaCombo("cboTipoUsuario",$empleado['UsuTipo'],''); ?>	
+							<?= $consultas->generaCombo("cboRol",$empleado['UsuTipo'],''); ?>	
 							</select>
 
 				          </div>

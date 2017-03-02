@@ -10,7 +10,7 @@ $Activo = $consultas->verificaSesion($sesion);
 
 
 	if(isset($_POST['clave'])){
-		$row=$consultas->Modificacion("DatosRol",$clave);
+		$row=$consultas->Modificacion("Usuarios",$clave);
 	} 
 
 
@@ -18,7 +18,7 @@ $Activo = $consultas->verificaSesion($sesion);
 	{
 		$cadenaTbl = "";
 		$clave = $clave == "" ? "0" : $clave;
-		$res = $consultas->DatosM("CargaRoles",$clave);
+		$res = $consultas->DatosM("CargaAccesos",$clave);
 		$letras = array("N", "M", "E", "C", "R"); 
 						
 		$cadenaTbl .= "<thead class='thead-inverse'> <tr><td class='EncGrid' align='center'>MODULO</td><td class='EncGrid' align='center'>SUBMODULO</td>";
@@ -60,7 +60,7 @@ $Activo = $consultas->verificaSesion($sesion);
     </div>
     <div class="row">
    <div class="col-md-4">
-            <a id="ModRol"  url="Rol.php" submodulo="<?=$submodulo;?>" modcve="<?=$modcve;?>" modulo="<?=$modulo;?>" onclick="modulos(this);" href="#">Regresar</a>
+            <a id="ModAccesos"  url="accesos.php" submodulo="<?=$submodulo;?>" modcve="<?=$modcve;?>" modulo="<?=$modulo;?>" onclick="modulos(this);" href="#">Regresar</a>
         </div>
     </div>
     
@@ -73,7 +73,7 @@ $Activo = $consultas->verificaSesion($sesion);
 				          <label>clave</label>   
 				            	</div> 
 				          <div class="col-md-2">
-				           <input type="text" id="clave" name="clave" placeholder="ID" value="<?=$row['RolCve']?>" class="form-control" disabled/>
+				           <input type="text" id="clave" name="clave" placeholder="ID" value="<?=$row['UsuCve']?>" class="form-control" disabled/>
 				         
 				          </div>
 
@@ -83,17 +83,46 @@ $Activo = $consultas->verificaSesion($sesion);
 				          <label>Nombre</label>   
 				            </div>
 				          <div class="col-md-4">
-     					<input type="text" id="nombre" name="nombre" value="<?=$row['RolDesc']?>" placeholder="Nombre" class="form-control" required/>
+     					<input type="text" id="nombre" name="nombre" disabled value="<?=$row['UsuNombre']?>" placeholder="Nombre" class="form-control" required/>
 				          </div>
 				         
 				      </div>
+				      <div class="row">
+				          <div class="col-md-2">
+				          <label>Correo</label>   
+				            </div>
+				          <div class="col-md-4">
+     					<input type="text" id="correo" disabled name="correo" value="<?=$row['UsuMail']?>" placeholder="Correo" class="form-control" required/>
+				          </div>
+				         
+				      </div>
+				       <!--div class="row">
+				          <div class="col-md-2">
+				          <label>Tipo de Usuario</label>   
+				            </div>
+				          <div class="col-md-4">
+     						<select id="cboTipo" name="cboTipo" class="form-control" disabled>
+							 $consultas->generaCombo("cboTipoUsuario",$row['UsuTipo'],''); ?>	
+							</select>
+     					   </div>
+				         
+				      </div-->
 				    
 				       <div class="row">
+				       	<div class="col-md-2">
+					    	<label name="Nombre"  class="control-label">Rol Usuario</label>
+					 		</div>
+							<div class="col-md-3"> 
+							<select id="cboRol" name="cboRol" class="form-control" >
+							<?= $consultas->generaCombo("cboRol",$row['UsuTipo'],''); ?>	
+							</select>   
+							</div>
 				       		<?php	if(isset($_POST['clave'])){ ?>
 					   	<div class="col-md-2">
 					    	<label name="Nombre"  class="control-label">Estatus</label>
 					 		</div>
-							<div class="col-md-1">    <input type="Checkbox"   name="status" id="status" type='text' class="form" value="" <?php echo ($row['RolActivo']=="1" ? "checked" : "" ) ?>/>					  	
+							<div class="col-md-1"> 
+							  <input type="Checkbox"   name="status" id="status" type='text' class="form" value="" <?php echo ($row['UsuActivo']=="1" ? "checked" : "" ) ?>/>					  	
 							</div>
 				
 					<?php } ?>
@@ -140,7 +169,7 @@ $Activo = $consultas->verificaSesion($sesion);
 
 
 <script type="text/javascript">
-var pagina="Rol";  //El nombre de la Pagina del lista cuando guarden a esta redireccionara
+var pagina="accesos";  //El nombre de la Pagina del lista cuando guarden a esta redireccionara
 var status=1;
 
      $(function(){
@@ -161,10 +190,10 @@ var status=1;
 	            submitHandler: function(form) {
 	            			var permisos=generaPermisos();
 	            		 if($("#clave").val()==""){
-						    var accion="NuevoRol";
+						    var accion="NuevoAcceso";
 
 						  }else{
-						     var accion="ModificaRol";
+						     var accion="ModificaAcceso";
 						      status=($("#status").is(":checked") ? "1" : "0");
 						 }
 
@@ -215,7 +244,7 @@ function generaPermisos()
   cadena = "";
   cadenaAux = "";
   checks = document.getElementById("tblPermisos").getElementsByTagName("input");
-modulo="";
+  modulo="";
   modsub = checks[0].name;
   for ( i = 0; i < checks.length; i++ ){    
     if( modsub != checks[i].name ){
@@ -231,13 +260,17 @@ modulo="";
 	          }
 	          datos.push(permisos);
           }
-          modulo=division[0];
+
           permisos={
             "modulo":division[0],
             "submodulo":division[1],
             "permiso":cadenaAux
           }
           datos.push(permisos);
+
+          modulo=division[0];
+
+         
       }    
           cadenaAux = ""; 
     }
@@ -260,7 +293,16 @@ if(cadenaAux != ""){
 }
 
 
+$("#cboRol").change(function(){
+			  var parametros={
+					  		"clave"		 : $(this).val(),
+					        'accion'     : "CambiarRol"
+					      };
 
+				cambiarRol(parametros,"Server.php");
+
+
+});
 
 
 

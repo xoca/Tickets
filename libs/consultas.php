@@ -65,7 +65,7 @@
 			 and B.usucve = C.usucve and B.modcve = A.modcve
 			 and B.modsub = A.modsub and A.modurl != ''  and modactivo = '1'
 			  ) A
-			 group by modcve, modsub, moddesc, modurl order by  modcve, modsub";
+			 group by modcve, modsub, moddesc, modurl order by  modcve,modorden, modsub";
 			
 			$result = mysql_query($query,$this->db) or die('Consulta fallida: ' . mysql_error());
 			return $result;
@@ -95,7 +95,7 @@
 			 and B.modsub = A.modsub and A.modurl != '' and A.modsub != 0 and modactivo = '1'
              and a.ModCve='".$parametros[1]."'
              union
-             select '".$parametros[1]."' modcve,0 modsub,moddesc,modurl,modorden from modulos where modcve='".$parametros[1]."' and modsub=0) as A order by modsub";
+             select '".$parametros[1]."' modcve,0 modsub,moddesc,modurl,modorden from modulos where modcve='".$parametros[1]."' and modsub=0) as A order by modcve,modorden, modsub";
             		
 			$result = mysql_query($query,$this->db) or die('Consulta fallida: ' . mysql_error());
 			return $result;

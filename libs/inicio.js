@@ -49,7 +49,7 @@ function Guardar(datos,Parametros,server,modulo,pagina){
 
 function Eliminar(datos,Parametros,server){
 
-  $.post("../Usuarios/"+server+".php", datos, function(data) { 
+  $.post(""+server+".php", datos, function(data) { 
          var res = eval('(' + data + ')');
          if(res.respuesta=="OK"){
           alert("Se ha eliminado el registrado");
@@ -160,5 +160,13 @@ var pagina=$("#paginared").val();
 
 }
 
+function cambiarRol(parametros,server){
 
+  $.post(""+server+"",parametros,function(datos,status,xhr){
+       var res = eval('(' + datos + ')');
+        if(res.tabla!="") $("#tblPermisos").html(res.tabla);
+
+  });
+
+}
 

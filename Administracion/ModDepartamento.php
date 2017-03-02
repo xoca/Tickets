@@ -76,9 +76,14 @@ $Activo = $consultas->verificaSesion($sesion);
    					  </div>	 
 				      <div class="row">
 				      	<br>
-				      	<div class="col-md-4">
+				      	
+				      	<div class="col-md-3">
 						 <input type="submit" class="btn btn-success btn" value="Guardar" id="btnClienteNuevo">
 						</div>
+							<?php	if(isset($_POST['clave'])){ ?>
+						<div class="col-md-3">
+				        <button type="button" class="btn btn-danger btn" name="Eliminar" id="Eliminar">Eliminar</button>
+                      	</div>  <? } ?>
 				      </div>
 				      <div class="row">
 				      	<br>
@@ -154,5 +159,24 @@ var status=1;
 
 
 	});
+
+
+ $("#Eliminar").click(function(){
+     var tablas=["area"];
+       var datos = {   
+        "sesion"   : $("#sesion").val(), 
+        "clave"    : $("#clave").val(), 
+        "accion"   : "Eliminar",
+        "tablas"   : tablas
+      }; 
+
+      if (confirm("Esta Seguro de Eliminar el Registro")){
+             Eliminar(datos,Parametros,"Server");
+      }
+
+       
+      
+
+     });
 
 </script>    

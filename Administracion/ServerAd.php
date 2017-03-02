@@ -16,8 +16,11 @@ $Usucve     = $_POST["usucve"];
             array("query" => "insert into usuarios values (@usuario,'".$_POST["usuario"]."','".$_POST["mail"]."','".$_POST["pass"]."',1,".$_POST['tipo'].")"),  
       
             array("query" => "select @empleado:=(select ifnull(max(emp_id),0)+1 clave from empleados)"),     
-            array("query" => "insert into empleados values (@empleado,@usuario,'".$_POST["nombre"]."','".$_POST["apellidos"]."','".$_POST["direccion"]."','".$_POST["cp"]."','".$_POST["ciudad"]."','".$_POST["estado"]."','".$_POST["correo"]."','".$_POST["area"]."','".$_POST["puesto"]."','".$_POST["telefono"]."','".$_POST["celular"]."',1)")
+            array("query" => "insert into empleados values (@empleado,@usuario,'".$_POST["nombre"]."','".$_POST["apellidos"]."','".$_POST["direccion"]."','".$_POST["cp"]."','".$_POST["ciudad"]."','".$_POST["estado"]."','".$_POST["correo"]."','".$_POST["area"]."','".$_POST["puesto"]."','".$_POST["telefono"]."','".$_POST["celular"]."',1)"),
+            array("query"=>"insert into seguridad (Usucve,ModCve,ModSub,Accion) select @usuario,ModCve,ModSub,SegAccion from rolesdet where Rolcve=".$_POST['tipo']." ")
            );
+
+
          
   }
 
@@ -32,14 +35,7 @@ $Usucve     = $_POST["usucve"];
   }
 
 
-    if( $accion == "Eliminar" ){
-        $query = array ( array("query" => "select @clave:=".$clave),
-         array("query" => "delete from usuarios where UsuCve=@clave"),
-         array("query" => "delete from seguridad where UsuCve=@clave"),
-         array("query" => "delete from empleados where emp_id=@clave")
-         );
-       
-   }
+
 
 
   if($accion=="NuevoCliente"){
@@ -62,16 +58,29 @@ $Usucve     = $_POST["usucve"];
    for($i=0; $i<$servicios; $i++){
        $renovacion=($_POST["servicios"][$i]['Frenovacion']=="" ? "null" : "'".$_POST["servicios"][$i]['Frenovacion']."'" );
       
-      $qryClave=array("query"=>"select @claveServicio:=(select ifnull(max(sercve),0)+1 clave from servicios_det )");
-      $qryServicios=array("query"=>"insert into servicios_det values (@claveServicio,'".$_POST['servicios'][$i]['id_servicio']."',@Cliente,'".$_POST['servicios'][$i]['url']."','".$_POST['servicios'][$i]['Finicio']."','".$_POST['servicios'][$i]['Ffin']."',".$renovacion.")");
+      $qryClave     = array("query"=>"select @claveServicio:=(select ifnull(max(sercve),0)+1 clave from servicios_det )");
+      $qryServicios = array("query"=>"insert into servicios_det values (@claveServicio,'".$_POST['servicios'][$i]['id_servicio']."',@Cliente,'".$_POST['servicios'][$i]['url']."','".$_POST['servicios'][$i]['Finicio']."','".$_POST['servicios'][$i]['Ffin']."',".$renovacion.")");
       array_push($query,$qryClave,$qryServicios);
 
     }
 
    }
-
+   
+     $qryPermisos = array("query"=>"insert into seguridad (Usucve,ModCve,ModSub,Accion) select @usuario,ModCve,ModSub,SegAccion from rolesdet where Rolcve=2 ");
+     array_push($query,$qryPermisos);
 
 }
+
+if($accion == "ModificaCliente"){
+
+      $query = array ( 
+            array("query" => "select @clave:=".$_POST["clave"]." "),
+            array("query" => "update clientes set cl_nombre='".$_POST["nombre"]."',cl_apellidos='".$_POST["apellidos"]."',cl_razons='".$_POST["razon"]."',cl_rfc='".$_POST["rfc"]."',cl_direccion='".$_POST["direccion"]."',cl_cp='".$_POST["cp"]."',cl_ciudad='".$_POST["ciudad"]."',cl_estado='".$_POST["estado"]."',cl_telefono='".$_POST["telefono"]."',cl_celular='".$_POST["celular"]."',cl_correo='".$_POST["correo"]."',cl_status='".$_POST["status"]."' where cl_id='".$_POST["clave"]."' "),  
+            array("query" => "update usuarios set UsuNombre='".$_POST["usuario"]."',UsuMail='".$_POST["correo"]."',UsuPassword='".$_POST["pass"]."',UsuActivo='".$_POST["status"]."' where UsuCve=".$_POST['id_usuario']." ")
+         );
+
+  }
+
 
 if($accion=="NuevoServicios"){
 
@@ -150,7 +159,7 @@ if($accion=="NuevoServicios"){
 
             $query = array ( 
                     array("query" => "select @clave:=".$_POST["clave"]." "),
-                    array("query" => "delete from rolesdet  where RolCve=".$_POST["clave"]." "),
+                    array("query" => "delete from rolesdet  where RolCve=@clave "),
                     array("query" => "update roles set RolDesc='".$_POST['nombre']."',RolActivo=".$_POST['status']." where RolCve=".$_POST['clave']." "),
                     );
 
@@ -168,6 +177,31 @@ if($accion=="NuevoServicios"){
 
     }
 
+        if($accion=="ModificaAcceso"){
+            $permisos=count($_POST['permisos']);
+
+            $query = array ( 
+                    array("query" => "select @clave:=".$_POST["clave"]." "),
+                    array("query" => "delete from seguridad  where UsuCve=".$_POST["clave"]." "),
+                    array("query" => "update usuarios set UsuActivo='".$_POST['status']."' where UsuCve=".$_POST['clave']." "),
+                    );
+
+      /*Registramos Los modulos seleccionados */ 
+             if($permisos>0){
+             for($i=0; $i<$permisos; $i++){
+                $qryPermiso=array("query"=>"insert into seguridad values (@clave,".$_POST['permisos'][$i]['modulo'].",".$_POST['permisos'][$i]['submodulo'].",'".$_POST['permisos'][$i]['permiso']."')");
+                array_push($query,$qryPermiso);
+
+              }
+          }
+
+
+          
+         }
+
+
+
+
  
           $bitacora=array("query" => "insert into bitacora (UsuCve,BitFecha,Accion,AccionClave,Tablaaccion) values(".$Usucve.",now(), '".$accion."',@clave,'".$_POST['modulo']."')");
           $ultimo=array("query" => "select @clave clave");
@@ -176,15 +210,17 @@ if($accion=="NuevoServicios"){
    $qry=$bd->transaccion($query); 
          if($bd->errorQry!=""){
             $result['respuesta']="NOK";
-            $result['error']=$bd->errorQry;
-            $result['mensaje']="Ha Ocurrido un Error al intentar guardar los datos.";
+            $result['mensaje']=$bd->errorQry;
+           
 
          }else{
             $result['respuesta']="OK";
-            $result['error']=$bd->errorQry;
+            $result['mensaje']=$bd->errorQry;
             $result['clave']=$qry['clave']."/".$qry[0];
 
          }
+
+
 
 echo array_to_json($result);
 

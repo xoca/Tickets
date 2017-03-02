@@ -3,12 +3,12 @@ include_once("../libs/consultas.php");
 include ('pagination.php');
 $bd = new Consultas();
 $sesion       = $_POST["sesion"];
-$clave      = $_POST["clave"];
-$claveModulo      = $_POST["clavemodulo"];
-$accion     = $_POST["accion"];
-$modulo     = $_POST["modulo"];  
-$submodulo  = $_POST["submodulo"];
-$Usucve    = $_POST["usucve"];
+$clave        = $_POST["clave"];
+$claveModulo  = $_POST["clavemodulo"];
+$accion       = $_POST["accion"];
+$modulo       = $_POST["modulo"];  
+$submodulo    = $_POST["submodulo"];
+$Usucve       = $_POST["usucve"];
 
 
  
@@ -22,13 +22,13 @@ $Usucve    = $_POST["usucve"];
 
      $html.='</div>';
       $result["menu"] = $html;
-      echo array_to_json($result);
+      
   }
 
   if( $accion == "cerrar" ){
       $login=$bd->cerrarSesion($sesion);
       $result['resul']=$login;
-      echo  array_to_json($result);
+      
   }
 
 
@@ -51,12 +51,84 @@ $Usucve    = $_POST["usucve"];
         $result['paginador']=$resultado[1];
         $result['datos']=$resultado[0];
         //$result['qry']=$resultado[2];
-        echo  array_to_json($result);
+       
   
     }
 
 
+    if( $accion == "CambiarRol" ){
+      $cadenaTbl = "";
+    $clave = $clave == "" ? "0" : $clave;
+    $res = $bd->DatosM("CargaRoles",$clave);
+    $letras = array("N", "M", "E", "C", "R"); 
+            
+    $cadenaTbl .= "<thead class='thead-inverse'> <tr><td class='EncGrid' align='center'>MODULO</td><td class='EncGrid' align='center'>SUBMODULO</td>";
+    $cadenaTbl .= "<td class='EncGrid' align='center'>ACCESO</td></thead>";
+    
+      
+    $i=0;
+    while($row = mysql_fetch_array($res[1])){
+      $className = "CeldaGrid".($i++)%2;
+      $cadenaTbl .= "<tr>";
+      if( $row["ModSub"] == 0 ){
+        $cadenaTbl .= "<td class=".$className." align='center'>".$row["ModNombre"]."</td>";
+        for($j=0; $j<2; $j++)
+          $cadenaTbl .= "<td class=".$className." align='center'></td>";
+      }     
+      else
+      {
+        $cadenaTbl .= "<td class=".$className."></td><td class=".$className." align='center'>".$row['SubNombre']."</td>";
+        for ( $j=0; $j<1; $j++){
+          $checked = substr_count($row["SegAccion"],$letras[$j]) > 0 ? "checked" : ""; 
+          $cadenaTbl .= "<td class=".$className." align='center'><input type='checkbox' class='Ctext' name='".$row["ModCve"]."|".$row["ModSub"]."' id='".$letras[$j]."' ".$checked."></td>";
+        }
+      }
+      $cadenaTbl .= "</tr>";
+    }   
+ 
+
+      $result['tabla']=$cadenaTbl;
+
+         
+   }
 
 
+       if( $accion == "Eliminar" ){
+       $tablas=count($_POST['tablas']);
+        $query =  array("query" => "select @clave:=".$clave),
+        if($permisos>0){
+             for($i=0; $i<$tablas; $i++){
+                $qrytabla=array("query"=>"delete from ".$tablas['tablas'][$i]." where id=@clave");
+                array_push($query,$qrytabla);
+
+              }
+          }
+
+          $bitacora=array("query" => "insert into bitacora (UsuCve,BitFecha,Accion,AccionClave,Tablaaccion) values(".$Usucve.",now(), '".$accion."',@clave,'".$_POST['modulo']."')");
+          $ultimo=array("query" => "select @clave clave");
+          array_push($query,$bitacora,$ultimo);  
+
+       
+
+
+        $qry=$bd->transaccion($query); 
+         if($bd->errorQry!=""){
+            $result['respuesta']="NOK";
+            $result['mensaje']=$bd->errorQry;
+           
+
+         }else{
+            $result['respuesta']="OK";
+            $result['mensaje']=$bd->errorQry;
+            $result['clave']=$qry['clave']."/".$qry[0];
+
+         }
+
+       
+   }
+
+
+
+ echo  array_to_json($result);
 
 ?>

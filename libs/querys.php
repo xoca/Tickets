@@ -13,17 +13,20 @@ class Querys {
 		   		break;
 
 		   		case "ListadoEmpleados":
-		   		return $qry="select emp_id,concat(emp_nombre,' ',emp_apellidos) nombre,pu_descripcion,AreaDesc,if(emp_status=1,'Activo','INACTIVO')  from empleados e
+		   		$qry="select emp_id,concat(emp_nombre,' ',emp_apellidos) nombre,pu_descripcion,AreaDesc,if(emp_status=1,'Activo','INACTIVO')  from empleados e
 						left join area a on e.id_area=a.AreaCve
 						left join puestos p on e.id_puesto=p.pu_id
-                        left join usuarios u on e.id_usuario=u.UsuCve where 1=1 order by UsuCve  limit ".$parametros[0].",".$parametros[1];
+                        left join usuarios u on e.id_usuario=u.UsuCve where 1=1 ";
+		   		if($parametros[2]['buscar']['nombre']!="") $qry.= " and  concat(emp_nombre,' ',emp_apellidos) like '%".$parametros[2]['buscar']['nombre']."%'"; 
+				return  $qry.="order by concat(emp_nombre,' ',emp_apellidos)  limit ".$parametros[0].",".$parametros[1];
+		   		
 		   		break;
 
 		   		case "ListadoEmpleadosCount":
 		   			$qry="select count(*) numero from empleados e left join area a on e.id_area=a.AreaCve
 						left join puestos p on e.id_puesto=p.pu_id
                         left join usuarios u on e.id_usuario=u.UsuCve where 1=1";
-		   		//if($parametros[2]['buscar']['nombre']!="") $qry.= " and  ser_nombre like '%".$parametros[2]['buscar']['nombre']."%'"; 
+		   	if($parametros[2]['buscar']['nombre']!="") $qry.= " and  concat(emp_nombre,' ',emp_apellidos) like '%".$parametros[2]['buscar']['nombre']."%'"; 
 				return $qry;
 
 		   		break;
@@ -75,8 +78,8 @@ class Querys {
 		   		case "Servicios":
 		   		return $qry=" select *
 							from servicios A
-							Left join servicios_det B on A.id=B.ser_categoria and ser_cliente=".$parametros[0]."
-							group by id ";
+							left join servicios_det B on A.id=B.ser_categoria and ser_cliente=".$parametros[0]."
+							where cat_status=1 group by id ";
 		   		break;
 
 		   		case "ListadoServicios":
@@ -147,6 +150,39 @@ class Querys {
 
 				case "DatosRol":
 				return $qry="select * from roles where RolCve=".$parametros[0]." ";
+				break;
+
+				case "LUsuarios":
+		   		$qry=" select UsuCve,UsuNombre,UsuMail,RolDesc,if(UsuActivo=1,'ACTIVO','INACTIVO') 
+					   from usuarios u,roles tu where u.UsuTipo=tu.Rolcve  ";
+		   		if($parametros[2]['buscar']['nombre']!="") $qry.= " and  UsuNombre like '%".$parametros[2]['buscar']['nombre']."%'"; 
+				$qry.=" order by UsuNombre  limit ".$parametros[0].",".$parametros[1];
+		   	
+				return $qry;
+				
+		   		break;
+
+		   		case "LUsuariosCount":
+		   		$qry=" select count(*) numero from usuarios where 1=1 ";
+		   		if($parametros[2]['buscar']['nombre']!="") $qry.= " and  UsuNombre  like '%".$parametros[2]['buscar']['nombre']."%'"; 
+				return $qry;
+				break;
+
+				case "cboRol":
+				 return $qry=" select RolCve,RolDesc from roles where RolActivo=1 ";
+				break;
+
+
+				case "CargaAccesos":
+				return $qry=" select A.ModCve, A.ModSub, Accion SegAccion,
+								(select ModDesc from modulos where ModCve = A.ModCve and ModSub=0) ModNombre,
+								(select ModDesc from modulos where ModCve = A.ModCve and A.ModSub = ModSub) SubNombre
+								from 
+								(select ModCve, ModSub, Accion from seguridad where UsuCve=".$parametros[0]."
+								union
+								select ModCve, ModSub, '' Accion from modulos C where not exists
+								(select ModCve, ModSub, Accion from seguridad D where UsuCve=".$parametros[0]." and 
+								C.ModCve = D.ModCve and C.ModSub = D.ModSub)) A order by ModNombre, ModSub, SubNombre ";
 				break;
 
 

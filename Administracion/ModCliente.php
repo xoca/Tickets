@@ -197,6 +197,16 @@ else echo $errorServicios=$servicios[1];
 				          <label>Contraseña</label>   
 				             <input type="pass" id="pass" name="pass" value="<?=$cliente['UsuPassword']?>" placeholder="Contraseña" class="form-control" required/>
 				          </div>
+
+				      </div>
+				       <div class="row">
+				      	 <div class="col-md-4">
+				          	  <label>Tipo de Usuario</label>
+				          	<select id="cboTipo" name="cboTipo" class="form-control" disabled>
+							<?= $consultas->generaCombo("cboRol","2",''); ?>	
+							</select>
+
+				          </div>
 				      </div>
 
 						      </div>
@@ -295,6 +305,7 @@ var consecutivo=false;
 					        "correo"     : $("#correo").val(),
 					        "mail"       : $("#mail").val(),
 					        "pass"       : $("#pass").val(),
+					        "tipo"       : $("#cboTipo").val(),
 					        "usuario"    : $("#nickname").val(),
 					        "id_usuario" : $("#id_usuario").val(),
 					        "servicios"       : servicios,
