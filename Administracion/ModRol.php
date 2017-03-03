@@ -52,7 +52,7 @@ $Activo = $consultas->verificaSesion($sesion);
        	<div class="row">
 		<div class="col-md-12 text-center">
 			<div class="panel panel-success" style="margin-top:30px">
-				<div class="panel-heading">Roles de Usuarios</div>
+				<div class="panel-heading">Tipos de Usuario</div>
 
 			</div>
 		</div>
@@ -105,6 +105,10 @@ $Activo = $consultas->verificaSesion($sesion);
 				      	<div class="col-md-4">
 						 <input type="submit" class="btn btn-success btn" value="Guardar" id="btnClienteNuevo">
 						</div>
+						<?php	if(isset($_POST['clave'])){ ?>
+						<div class="col-md-3">
+				        <button type="button" class="btn btn-danger btn" name="Eliminar" id="Eliminar">Eliminar</button>
+                      	</div>  <? } ?>
 				      </div>
 				      <div class="row">
 				      	<div class="col-md-2 col-md-offset-10">
@@ -142,20 +146,16 @@ $Activo = $consultas->verificaSesion($sesion);
 <script type="text/javascript">
 var pagina="Rol";  //El nombre de la Pagina del lista cuando guarden a esta redireccionara
 var status=1;
-
-     $(function(){
-
-		  var Parametros = {   
+  var Parametros = {   
 		        "sesion"    : $("#sesion").val(), 
 		        "modulo"    : $("#modulos").val(),
 		        "submodulo" : $("#submodulo").val(),
 		        "modcve"	: $("#modcve").val()
 		    }; 
 
-         
-	   	    
+        
+     $(function(){
 
-	        
 	        $("#Datos").validate({
 
 	            submitHandler: function(form) {
@@ -258,6 +258,38 @@ if(cadenaAux != ""){
     return datos;
 
 }
+
+
+
+ $("#Eliminar").click(function(){
+    var tablas=[];
+     var tables=["roles","rolesdet"];
+    for(i=0;i<2;i++){
+
+     var condiciones={
+     	"tabla":tables[i],
+     	"condicion": " and RolCve="+$("#clave").val()+" "
+     	
+     	};
+     	tablas.push(condiciones);
+    }
+      
+       var datos = {   
+        "sesion"   : $("#sesion").val(), 
+        "clave"    : $("#clave").val(), 
+        "usucve"   : $("#Usucve").val(),
+        "accion"   : "Eliminar",
+        "tablas"   : tablas
+      }; 
+
+      if (confirm("Esta Seguro de Eliminar el Registro")){
+             Eliminar(datos,Parametros,"Server",pagina);
+      }
+
+       
+      
+
+     });
 
 
 

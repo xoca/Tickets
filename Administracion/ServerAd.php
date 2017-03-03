@@ -15,8 +15,8 @@ $Usucve     = $_POST["usucve"];
             array("query" => "select @usuario:=(select ifnull(max(UsuCve),0)+1 clave from usuarios)"),  
             array("query" => "insert into usuarios values (@usuario,'".$_POST["usuario"]."','".$_POST["mail"]."','".$_POST["pass"]."',1,".$_POST['tipo'].")"),  
       
-            array("query" => "select @empleado:=(select ifnull(max(emp_id),0)+1 clave from empleados)"),     
-            array("query" => "insert into empleados values (@empleado,@usuario,'".$_POST["nombre"]."','".$_POST["apellidos"]."','".$_POST["direccion"]."','".$_POST["cp"]."','".$_POST["ciudad"]."','".$_POST["estado"]."','".$_POST["correo"]."','".$_POST["area"]."','".$_POST["puesto"]."','".$_POST["telefono"]."','".$_POST["celular"]."',1)"),
+            array("query" => "select @clave:=(select ifnull(max(emp_id),0)+1 clave from empleados)"),     
+            array("query" => "insert into empleados values (@clave,@usuario,'".$_POST["nombre"]."','".$_POST["apellidos"]."','".$_POST["direccion"]."','".$_POST["cp"]."','".$_POST["ciudad"]."','".$_POST["estado"]."','".$_POST["correo"]."','".$_POST["area"]."','".$_POST["puesto"]."','".$_POST["telefono"]."','".$_POST["celular"]."',1)"),
             array("query"=>"insert into seguridad (Usucve,ModCve,ModSub,Accion) select @usuario,ModCve,ModSub,SegAccion from rolesdet where Rolcve=".$_POST['tipo']." ")
            );
 
@@ -47,9 +47,9 @@ $Usucve     = $_POST["usucve"];
       array("query" => "select @usuario:=(select ifnull(max(UsuCve),0)+1 clave from usuarios)"),  
       array("query" => "insert into usuarios values (@usuario,'".$_POST["usuario"]."','".$_POST["mail"]."','".$_POST["pass"]."',1,2)"),  
       
-      array("query" => "select @Cliente:=(select ifnull(max(cl_id),0)+1 clave from clientes)"),     
-      array("query" => "insert into clientes values (@Cliente,'".$_POST["nombre"]."','".$_POST["apellidos"]."','".$_POST["razon"]."','".$_POST["rfc"]."','".$_POST["direccion"]."','".$_POST["cp"]."','".$_POST["ciudad"]."','".$_POST["estado"]."','".$_POST["telefono"]."','".$_POST["celular"]."','".$_POST["correo"]."',@usuario,1)"),
-      array("query" => "delete from servicios_det where   ser_cliente=@Cliente")
+      array("query" => "select @clave:=(select ifnull(max(cl_id),0)+1 clave from clientes)"),     
+      array("query" => "insert into clientes values (@clave,'".$_POST["nombre"]."','".$_POST["apellidos"]."','".$_POST["razon"]."','".$_POST["rfc"]."','".$_POST["direccion"]."','".$_POST["cp"]."','".$_POST["ciudad"]."','".$_POST["estado"]."','".$_POST["telefono"]."','".$_POST["celular"]."','".$_POST["correo"]."',@usuario,1)"),
+      array("query" => "delete from servicios_det where   ser_cliente=@clave")
 
          );
   
@@ -59,7 +59,7 @@ $Usucve     = $_POST["usucve"];
        $renovacion=($_POST["servicios"][$i]['Frenovacion']=="" ? "null" : "'".$_POST["servicios"][$i]['Frenovacion']."'" );
       
       $qryClave     = array("query"=>"select @claveServicio:=(select ifnull(max(sercve),0)+1 clave from servicios_det )");
-      $qryServicios = array("query"=>"insert into servicios_det values (@claveServicio,'".$_POST['servicios'][$i]['id_servicio']."',@Cliente,'".$_POST['servicios'][$i]['url']."','".$_POST['servicios'][$i]['Finicio']."','".$_POST['servicios'][$i]['Ffin']."',".$renovacion.")");
+      $qryServicios = array("query"=>"insert into servicios_det values (@claveServicio,'".$_POST['servicios'][$i]['id_servicio']."',@clave,'".$_POST['servicios'][$i]['url']."','".$_POST['servicios'][$i]['Finicio']."','".$_POST['servicios'][$i]['Ffin']."',".$renovacion.")");
       array_push($query,$qryClave,$qryServicios);
 
     }
@@ -72,12 +72,26 @@ $Usucve     = $_POST["usucve"];
 }
 
 if($accion == "ModificaCliente"){
-
+ $servicios=count($_POST['servicios']);
       $query = array ( 
             array("query" => "select @clave:=".$_POST["clave"]." "),
             array("query" => "update clientes set cl_nombre='".$_POST["nombre"]."',cl_apellidos='".$_POST["apellidos"]."',cl_razons='".$_POST["razon"]."',cl_rfc='".$_POST["rfc"]."',cl_direccion='".$_POST["direccion"]."',cl_cp='".$_POST["cp"]."',cl_ciudad='".$_POST["ciudad"]."',cl_estado='".$_POST["estado"]."',cl_telefono='".$_POST["telefono"]."',cl_celular='".$_POST["celular"]."',cl_correo='".$_POST["correo"]."',cl_status='".$_POST["status"]."' where cl_id='".$_POST["clave"]."' "),  
-            array("query" => "update usuarios set UsuNombre='".$_POST["usuario"]."',UsuMail='".$_POST["correo"]."',UsuPassword='".$_POST["pass"]."',UsuActivo='".$_POST["status"]."' where UsuCve=".$_POST['id_usuario']." ")
+            array("query" => "update usuarios set UsuNombre='".$_POST["usuario"]."',UsuMail='".$_POST["correo"]."',UsuPassword='".$_POST["pass"]."',UsuActivo='".$_POST["status"]."' where UsuCve=".$_POST['id_usuario']." "),
+            array("query" => "delete from servicios_det where   ser_cliente=@clave")
          );
+
+       /*Registramos sus Servicios registrados */ 
+       if($servicios>0){
+   for($i=0; $i<$servicios; $i++){
+       $renovacion=($_POST["servicios"][$i]['Frenovacion']=="" ? "null" : "'".$_POST["servicios"][$i]['Frenovacion']."'" );
+      
+      $qryClave     = array("query"=>"select @claveServicio:=(select ifnull(max(sercve),0)+1 clave from servicios_det )");
+      $qryServicios = array("query"=>"insert into servicios_det values (@claveServicio,'".$_POST['servicios'][$i]['id_servicio']."',@clave,'".$_POST['servicios'][$i]['url']."','".$_POST['servicios'][$i]['Finicio']."','".$_POST['servicios'][$i]['Ffin']."',".$renovacion.")");
+      array_push($query,$qryClave,$qryServicios);
+
+    }
+
+   }
 
   }
 

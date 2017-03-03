@@ -107,21 +107,17 @@ $Activo = $consultas->verificaSesion($sesion);
 <script type="text/javascript">
 var pagina="departamento";
 var status=1;
-
-
-     $(function(){
-
-  var Parametros = {   
+var Parametros = {   
         "sesion"    : $("#sesion").val(), 
         "modulo"    : $("#modulos").val(),
         "submodulo" : $("#submodulo").val(),
         "modcve"	: $("#modcve").val()
     }; 
 
-         
-	   	    
 
-	        
+     $(function(){
+
+  	        
 	        $("#Datos").validate({
 
 	            submitHandler: function(form) {
@@ -162,21 +158,29 @@ var status=1;
 
 
  $("#Eliminar").click(function(){
-     var tablas=["area"];
+     var tablas=[];
+     var condiciones={
+     	"tabla":"servicios",
+     	"condicion": " and AreaCve="+$("#clave").val()+" "
+     	
+     	};
+     	tablas.push(condiciones);
+      
        var datos = {   
         "sesion"   : $("#sesion").val(), 
         "clave"    : $("#clave").val(), 
+        "usucve"   : $("#Usucve").val(),
         "accion"   : "Eliminar",
         "tablas"   : tablas
       }; 
 
       if (confirm("Esta Seguro de Eliminar el Registro")){
-             Eliminar(datos,Parametros,"Server");
+             Eliminar(datos,Parametros,"Server",pagina);
       }
 
        
       
 
-     });
+  });
 
 </script>    

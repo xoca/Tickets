@@ -47,16 +47,17 @@ function Guardar(datos,Parametros,server,modulo,pagina){
 
 
 
-function Eliminar(datos,Parametros,server){
+function Eliminar(datos,Parametros,server,pagina){
 
   $.post(""+server+".php", datos, function(data) { 
          var res = eval('(' + data + ')');
          if(res.respuesta=="OK"){
           alert("Se ha eliminado el registrado");
           //Tiene mandarlo al listado o pagina de inicio
-         $( "#modulo" ).load('/tickets/Usuarios/Listado'+$("#modulos").val()+'.php',Parametros);
+          $( "#modulo" ).load('/tickets/'+Parametros['modulo']+'/'+pagina+'.php',Parametros);
 
-         }
+         }else
+         alert("Ha ocurrido el siguiente error "+res.mensaje)
 
         }); 
 

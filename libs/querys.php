@@ -138,12 +138,12 @@ class Querys {
 
 				case "CargaRoles":
 				return $qry=" select A.ModCve, A.ModSub, SegAccion,
-								(select ModDesc from modulos where ModCve = A.ModCve and ModSub=0) ModNombre,
-								(select ModDesc from modulos where ModCve = A.ModCve and A.ModSub = ModSub) SubNombre
+								(select ModDesc from modulos where ModCve = A.ModCve and ModSub=0 and ModActivo=1) ModNombre,
+								(select ModDesc from modulos where ModCve = A.ModCve and A.ModSub = ModSub and ModActivo=1) SubNombre
 								from 
 								(select ModCve, ModSub, SegAccion from rolesdet where RolCve=".$parametros[0]."
 								union
-								select ModCve, ModSub, '' SegAccion from modulos C where not exists
+								select ModCve, ModSub, '' SegAccion from modulos C where ModActivo=1 and not exists
 								(select ModCve, ModSub, SegAccion from rolesdet D where RolCve=".$parametros[0]." and 
 								C.ModCve = D.ModCve and C.ModSub = D.ModSub)) A order by ModNombre, ModSub, SubNombre ";
 				break;

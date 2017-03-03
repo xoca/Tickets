@@ -48,13 +48,7 @@ if($accion==$funcion){
                       </select>
                     </div>
                   </div>
-                   <div class="row">
-                    <div class="col-md-4">
-                     <label>Prioridad</label>
-                    <select class="form-control" id='prioridad' name='prioridad'>
-                     <?= $consultas->generaCombo("Prioridad",$prioridad,$parametro) ?>
-                    </select> </div>
-                  </div>
+                   
 
                   <div class="row">
                      <div class="col-md-4">

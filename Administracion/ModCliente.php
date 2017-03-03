@@ -218,6 +218,10 @@ else echo $errorServicios=$servicios[1];
 				      	<div class="col-md-4">
 						 <input type="submit" class="btn btn-success btn" value="Guardar" id="btnClienteNuevo">
 						</div>
+							<?php	if(isset($_POST['clave'])){ ?>
+						<div class="col-md-3">
+				        <button type="button" class="btn btn-danger btn" name="Eliminar" id="Eliminar">Eliminar</button>
+                      	</div>  <? } ?>
 				      </div>
 				      <div class="row">
 				      	<br>
@@ -242,16 +246,16 @@ else echo $errorServicios=$servicios[1];
 var pagina="clientes";
 var status=1;
 var consecutivo=false;
-
-
-     $(function(){
-
   var Parametros = {   
         "sesion"    : $("#sesion").val(), 
         "modulo"    : $("#modulos").val(),
         "submodulo" : $("#submodulo").val(),
         "modcve"	: $("#modcve").val()
     }; 
+
+     $(function(){
+
+
 
            $( "input[name='fechas']" ).datepicker({
     	  
@@ -360,6 +364,42 @@ function Servicios(){
  			return datos;
 
 }
+
+
+ $("#Eliminar").click(function(){
+     
+     var tablas=[];
+     var tables=["clientes","servicios_det","bitacora","usuarios","seguridad"];
+     var id=["cl_id="+$("#clave").val()+"","ser_cliente="+$("#clave").val(),"UsuCve="+$("#id_usuario").val()+"","UsuCve="+$("#id_usuario").val()+"","Usucve="+$("#id_usuario").val()+" "];
+    for(i=0;i<5;i++){
+
+     var condiciones={
+     	"tabla":tables[i],
+     	"condicion": " and "+id[i]+" "
+     	
+     	};
+     	tablas.push(condiciones);
+    }
+
+       var datos = {   
+        "sesion"   : $("#sesion").val(), 
+        "clave"    : $("#clave").val(), 
+        "usucve"   : $("#Usucve").val(),
+        "modulo"   : $("#modulos").val(),
+        "accion"   : "Eliminar",
+        "tablas"   : tablas
+
+      }; 
+
+      if (confirm("Esta Seguro de Eliminar el Registro")){
+             Eliminar(datos,Parametros,"Server",pagina);
+      }
+
+       
+      
+
+     });
+
 
 
 </script>    

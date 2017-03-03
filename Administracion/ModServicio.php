@@ -70,6 +70,10 @@ $Activo = $consultas->verificaSesion($sesion);
 				      	<div class="col-md-4">
 						 <input type="submit" class="btn btn-success btn" value="Guardar" id="btnClienteNuevo">
 						</div>
+						<?php	if(isset($_POST['clave'])){ ?>
+						<div class="col-md-3">
+				        <button type="button" class="btn btn-danger btn" name="Eliminar" id="Eliminar">Eliminar</button>
+                      	</div>  <? } ?>
 				      </div>
 				      <div class="row">
 				      	<br>
@@ -93,10 +97,6 @@ $Activo = $consultas->verificaSesion($sesion);
 <script type="text/javascript">
 var pagina="servicios";
 var status=1;
-
-
-     $(function(){
-
   var Parametros = {   
         "sesion"    : $("#sesion").val(), 
         "modulo"    : $("#modulos").val(),
@@ -104,8 +104,8 @@ var status=1;
         "modcve"	: $("#modcve").val()
     }; 
 
-         
-	   	    
+
+     $(function(){
 
 	        
 	        $("#DatosServicios").validate({
@@ -144,5 +144,32 @@ var status=1;
 
 
 	});
+
+
+ $("#Eliminar").click(function(){
+     var tablas=[];
+    var condiciones={
+     	"tabla":"servicios",
+     	"condicion": " and id="+$("#clave").val()+" "
+     	
+     	};
+     	tablas.push(condiciones);
+      
+       var datos = {   
+        "sesion"   : $("#sesion").val(), 
+        "clave"    : $("#clave").val(), 
+        "usucve"   : $("#Usucve").val(),
+        "accion"   : "Eliminar",
+        "tablas"   : tablas
+      }; 
+
+      if (confirm("Esta Seguro de Eliminar el Registro")){
+             Eliminar(datos,Parametros,"Server",pagina);
+      }
+
+       
+      
+
+     });
 
 </script>    

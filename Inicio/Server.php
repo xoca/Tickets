@@ -93,24 +93,22 @@ $Usucve       = $_POST["usucve"];
    }
 
 
-       if( $accion == "Eliminar" ){
+      if( $accion == "Eliminar" ){
        $tablas=count($_POST['tablas']);
-        $query =  array("query" => "select @clave:=".$clave),
-        if($permisos>0){
+
+        $query =  array();
+      if($tablas>0){
              for($i=0; $i<$tablas; $i++){
-                $qrytabla=array("query"=>"delete from ".$tablas['tablas'][$i]." where id=@clave");
+                $qrytabla=array("query"=>" delete from ".$_POST['tablas'][$i]['tabla']." where 1=1 ".$_POST['tablas'][$i]['condicion']." ");
                 array_push($query,$qrytabla);
 
               }
           }
 
-          $bitacora=array("query" => "insert into bitacora (UsuCve,BitFecha,Accion,AccionClave,Tablaaccion) values(".$Usucve.",now(), '".$accion."',@clave,'".$_POST['modulo']."')");
+          $bitacora=array("query" => "insert into bitacora (UsuCve,BitFecha,Accion,AccionClave,Tablaaccion) values(".$Usucve.",now(), '".$accion."".$_POST['tablas'][0]['tabla']."',".$_POST['clave'].",'".$_POST['modulo']."')");
           $ultimo=array("query" => "select @clave clave");
           array_push($query,$bitacora,$ultimo);  
-
-       
-
-
+         
         $qry=$bd->transaccion($query); 
          if($bd->errorQry!=""){
             $result['respuesta']="NOK";
