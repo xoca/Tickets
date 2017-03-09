@@ -7,8 +7,25 @@ $submodulo = $_POST['submodulo'];
 $consultas = new Consultas();
 //Si no esta activo lo manda al Login.
 $Activo = $consultas->verificaSesion($sesion);
+print_r($_GET);
 
 ?>
+
+<div class="row">
+           
+               <div class="col-sm-3">
+                <strong>Nombre</strong>
+                   <input type="text"class="form-control" placeholder="Nombre" name="nombre" id="nombre">
+                </div>
+                
+                <div class="col-md-4">
+                  <br/>
+                 <button id="buscar" onclick="buscar();" class="btn btn-gris">Buscar</button>
+                </div>
+                 
+</div>
+
+<div class="row"><br></div>
 
 <div class="panel panel-default">
 <div class="panel-heading">
@@ -17,23 +34,23 @@ Listado de Ticket Abiertos</div>
 <table class="table table-striped table-hover" id="gridticket">
     <thead>
     <tr>
-     <th>Clave</th>
-     <th>Titulo</th>
-     <th>Usuario</th>
-     <th>Area</th>
-     <th>Prioridad</th>
-     <th>status</th>
+     <th>Folio</th>
+     <th>Fecha</th>
+     <th>Nombre</th>
+     <th>Departamento</th>
+     <th>Servicio</th>
+     <th>Correo</th>
       </tr>
 </thead>
 
-      <tbody id="bodyGridTicket">
+      <tbody id="bodyGrid">
       </tbody>
 </table>
 
 </div>
 
 <!--- SE VA PINTAR EL PAGINADOR  -->
-<div class="panel-footer" id="paginadorTicket">
+<div class="panel-footer" id="paginador">
 </div>
 </div>         
 
@@ -47,14 +64,29 @@ Listado de Ticket Abiertos</div>
 
 
 <script type="text/javascript">
-
-$(document).ready(function(){
-     var parametros={
+var parametros={
         "nombre" : $("#nombre").val(),
         "convenio"  : "-1"
-     };
+    };
+
+
+
+$(document).ready(function(){
+   
         CargarFiltro(1,"ListadoTicket",parametros);
 
       });
+
+
+
+   function buscar(){
+
+    var parametros={
+        "nombre" : $("#nombre").val(),
+        "convenio"  : "-1"
+    };
+        CargarFiltro(1,"ListadoTicket",parametros);
+
+   }
 
 </script>  

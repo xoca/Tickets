@@ -14,42 +14,59 @@ if(isset($_POST['clave'])){
 	$cliente=$consultas->Modificacion("DatosCliente",$clave);
 	
 } 
-
+$idServicio=0;
 //Mostrar los servicios registrados y pueden elegir
 $servicios=$consultas->DatosM("Servicios",$clave);
-$htmlServicios="";
+$htmlServicios=""; $i=0;
 if($servicios[0]==1)
 while ($row=mysql_fetch_array($servicios[1])) {
+	
+	$i++;
 	$checked=($row['ser_cliente']!="" ? "checked" : "");
-		$htmlServicios.='<div class="row ServiciosDiv">
+	if($row[0]!=$idServicio){
+		$htmlServicios.='</div><div id="AgregarSer'.$row[0].'"><div class="row ServiciosDiv">
 							    	<div class="col-md-1">
 							    	 <br>
-						          		 <input type="checkbox" id="servicio'.$row[0].'" '.$checked.' name="servicios" value="'.$row[0].'" />
+						          		 <input type="checkbox" id="servicio'.$i.'" '.$checked.' name="servicios" value="'.$row[0].'" />
 						          		</div>
-						          		<div class="col-md-2">
-						          		 <label><br>'.$row[1].'</label>
-						          		</div>
-						          	<div class="col-md-3">
-						          	<label>URL</label>
-						          		 <input type="text" id="url'.$row[0].'" name="servisDatos" value="'.$row['ser_url'].'" class="form-control" placeholder="http://www.google.com" />
+						          	<div class="col-md-4">
+						          	 <label>'.$row[1].'</label>
+						          		 <input type="text" id="url'.$i.'" name="servisDatos" value="'.$row['ser_url'].'" class="form-control" placeholder="http://www.google.com" />
 						          		</div>
 						          		<div class="col-md-2">
 						          		<label>Fecha Inicio</label>
-						          	  <input  name="fechas" id="fechaIni'.$row[0].'" type="text" class="form-control date" value="'.$row['fecha_inicio'].'"/>
+						          	  <input  name="fechas" id="fechaIni'.$i.'" type="text" class="form-control date" value="'.$row['fecha_inicio'].'"/>
 						          		</div>	
 						          		<div class="col-md-2">
 						          		<label>Fecha Final</label>
-						          	  <input  name="fechas" id="fechafin'.$row[0].'" type="text" class="form-control date" value="'.$row['fecha_fin'].'"/>
+						          	  <input  name="fechas" id="fechafin'.$i.'" type="text" class="form-control date" value="'.$row['fecha_fin'].'"/>
 						          		</div>
 						          		<div class="col-md-2">
-						          		<label>F. Renovacion</label>
-						          	  <input  name="fechas" id="fechaRen'.$row[0].'" type="text" class="form-control date" value="'.$row['fecha_renovacion'].'"/>
-						          		</div>		
+						          		<label>F.Renovacion</label>
+						          	  <input  name="fechas" id="fechaRen'.$i.'" type="text" class="form-control date" value="'.$row['fecha_renovacion'].'"/>
+						          		  </div>	
+						          	  <div class="col-md-1">
+						          	  <br><br>
+						          	 <img src="../imagenes/add-icon.png" name="'.$row[0].'" divid="AgregarSer'.$i.'" value="'.$row[0].'" id="add'.$row[0].'" tittle="Agregar Servicio" alt="agregar" width="20px" heigth="20px" onclick="AgregarServicio(this);"/>	
+						          	  </div>	
 				    		 		 </div>';
-	
-}
-					  
+			}else{
 
+				$htmlServicios.='<div class="row ServiciosDiv" attr="SubServicio" id="ServicioSub'.$i.'">
+							    	<div class="col-md-1"><br><input type="checkbox"  id="servicio'.$i.'" '.$checked.' name="servicios" value="'.$row[0].'" style="display:none" /></div>
+						          	<div class="col-md-4"><input type="text" id="url'.$row[0].'" name="servisDatos" value="'.$row['ser_url'].'" class="form-control" placeholder="http://www.google.com" /></div>
+						          	<div class="col-md-2"><input  name="fechas" id="fechaIni'.$i.'" type="text" class="form-control date" value="'.$row['fecha_inicio'].'"/></div>	
+						          	<div class="col-md-2"><input  name="fechas" id="fechafin'.$i.'" type="text" class="form-control date" value="'.$row['fecha_fin'].'"/></div>
+						          	<div class="col-md-2"><input  name="fechas" id="fechaRen'.$i.'" type="text" class="form-control date" value="'.$row['fecha_renovacion'].'"/></div>	
+						          	<div class="col-md-1"><img src="../imagenes/delete.png" name="ServicioSub'.$i.'"  value="'.$row[0].'" id="add'.$row[0].'" title="Eliminar Servicio" alt="Eliminar" width="20px" heigth="20px" onclick="EliminarServicio(this);"/></div>	
+				    		 	 </div>';
+			}	
+		// $htmlServicios.="<div>"; 
+$idServicio=$row[0];
+
+				 		 
+	
+}				 
 else echo $errorServicios=$servicios[1];
 
 ?>
@@ -177,7 +194,7 @@ else echo $errorServicios=$servicios[1];
    						 </div>
    					  </div>
 				      <div class="row">
-				         <div class="panel panel-success col-md-10">
+				         <div class="panel panel-success col-md-12">
 						      <div class="panel-heading">Datos Para el inicio de Sesion</div>
 						      <div class="panel-body">
 						      	<div class="row">
@@ -243,9 +260,10 @@ else echo $errorServicios=$servicios[1];
 
 
 <script type="text/javascript">
-var pagina="clientes";
+var pagina="clientes.php";
 var status=1;
 var consecutivo=false;
+var nexteServicio = "<?=$i?>";
   var Parametros = {   
         "sesion"    : $("#sesion").val(), 
         "modulo"    : $("#modulos").val(),
@@ -266,10 +284,6 @@ var consecutivo=false;
 
 				});
 
-	
-	   
- if($("#clave").val()=="") var accion="NuevoEmpleado";
-	else	var accion="ModificaEmpleado";
 	    
 
 
@@ -291,7 +305,7 @@ var consecutivo=false;
 						     var accion="ModificaCliente";
 						      status=($("#status").is(":checked") ? "1" : "0");
 						 }
-
+						
 
 					  campos={
 					  		"clave"		 : $("#clave").val(),
@@ -335,35 +349,8 @@ var consecutivo=false;
 
 	});
 
-function Servicios(){
-  	    var datos=[];
-    	var servicios={};
 
- 			$(".ServiciosDiv").each(function(){
-    		
-    			var checked=$(this).children()[0].childNodes[3].checked;
-    			
-    			//Los que este checked sacamos las demas informacion de ese renglon
-    			if(checked){
-    				 servicios={
-                    'id_servicio'  : $(this).children()[0].childNodes[3].value,
-                    'url'  		   : $(this).children()[2].childNodes[3].value,
-                    'Finicio'      : $(this).children()[3].childNodes[3].value,
-                    'Ffin'         : $(this).children()[4].childNodes[3].value,
-                    'Frenovacion'  : $(this).children()[5].childNodes[3].value
-                   
-               };
-             
-               datos.push(servicios);
 
-    			}
-    			
-
-  			 });
-
- 			return datos;
-
-}
 
 
  $("#Eliminar").click(function(){
@@ -400,6 +387,44 @@ function Servicios(){
 
      });
 
+
+function AgregarServicio(obj){
+	  var idServicio=obj.name;
+		nexteServicio++;
+
+	campo = '<div class="row ServiciosDiv" attr="SubServicio" id="ServicioSub'+nexteServicio+'">'+
+	  ""+'<div class="col-md-1"><br><input type="checkbox" checked style="display:none" id="servicio'+nexteServicio+'" name="servicios" value="'+idServicio+'" /></div>'+
+	  ""+'<div class="col-md-4"><input type="text" class="form-control" attr="subservicios" id="url'+nexteServicio+'" name="servisDatos' + nexteServicio + '" ></div>'+
+	  ""+'<div class="col-md-2"><input type="text" name="fechas" id="fechaIni' + nexteServicio + '"  class="form-control date" value=""  /></div>'+
+	  ""+'<div class="col-md-2"><input type="text" name="fechas" id="fechafin' + nexteServicio + '"  class="form-control date" value=""  /></div>'+
+	  ""+'<div class="col-md-2"><input type="text" name="fechas" id="fechaRen' + nexteServicio + '"  class="form-control date" value=""  /></div>'+
+	  ""+'<div class="col-md-1"><img name="ServicioSub'+nexteServicio+'" src="../imagenes/delete.png" style="width:20px" name="ServicioSub'+nexteServicio+'" onclick="EliminarServicio(this);" /></div></div>'  ;
+		$("#AgregarSer"+idServicio).append(campo);
+
+/* Cuando se agrege el renglon la fecha salga el calendario */
+$( "input[name='fechas']" ).datepicker({
+    	  
+			    	  changeMonth : true,
+			    	  changeYear  : true,
+			    	  dateFormat  : 'yy-mm-dd',
+			    	  yearRange   : "2016:2050"
+
+				});		
+
+	}
+
+
+function EliminarServicio(obj){
+		var div=obj.name;
+		var msj="";
+		$("#"+div).remove();
+
+	
+
+	
+		
+
+	}
 
 
 </script>    

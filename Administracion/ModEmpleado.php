@@ -201,7 +201,7 @@ if(isset($_POST['clave'])){
 
 
 <script type="text/javascript">
-var pagina="empleados";
+var pagina="empleados.php";
 var status=1;
 var consecutivo=false;
   var Parametros = {   

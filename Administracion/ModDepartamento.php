@@ -105,7 +105,7 @@ $Activo = $consultas->verificaSesion($sesion);
 
 
 <script type="text/javascript">
-var pagina="departamento";
+var pagina="departamento.php";
 var status=1;
 var Parametros = {   
         "sesion"    : $("#sesion").val(), 

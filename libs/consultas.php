@@ -53,9 +53,18 @@
 
 		function DatosUsuarios($parametros)
 		{	
-			$query = "select U.UsuCve,UsuNombre Nombre from usuarios U,sesion s where U.UsuCve=s.UsuCve and s.SesCve ='".$sid."' ";
-			$result = mysql_query($query) or die('Consulta fallida: ' . mysql_error());
-			return $fila = mysql_fetch_row($result);			
+			$query = "select U.UsuCve,UsuNombre Nombre from usuarios U,sesion s where U.UsuCve=s.UsuCve and s.SesCve ='".$parametros."' ";
+			$result = mysql_query($query) or die ('<div class="alert alert-danger alert-dismissible" role="alert">Ha Ocurrido un Error al tratar de generar los datos Usuarios</div>'.mysql_error()." Qry-> ".$query);
+			$fila = mysql_fetch_row($result);
+			return $fila;			
+		}
+
+		function DatosCliente($parametros){
+			$query="select * from clientes where id_usuario=".$parametros;
+			$result=mysql_query($query) or die ('<div class="alert alert-danger alert-dismissible" role="alert">Ha Ocurrido un Error al tratar de generar los datos Clientes</div>'.mysql_error()." Qry-> ".$query);
+			$fila = mysql_fetch_row($result);
+			return $fila;
+
 		}
 
 		function menu($sesion){	

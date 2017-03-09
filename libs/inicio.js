@@ -30,7 +30,7 @@ function Guardar(datos,Parametros,server,modulo,pagina){
          if(res.respuesta=="OK"){
           alert("Los cambios se han guardado Correctamente");
           //Tiene mandarlo al listado o pagina de inicio
-         $( "#modulo" ).load('/tickets/'+modulo+'/'+pagina+'.php',Parametros);
+         $( "#modulo" ).load('/tickets/'+modulo+'/'+pagina,Parametros);
 
          }else {
           alert("Ha ocurrido un error al intentar guardar los datos "+res.mensaje)
@@ -131,7 +131,7 @@ function CargarFiltro(page,qry,parametros){
           //location.reload();
           //Tiene mandarlo al listado o pagina de inicio
 
-        }); 
+      }); 
 }
 
 
@@ -171,3 +171,37 @@ function cambiarRol(parametros,server){
 
 }
 
+
+function Servicios(){
+        var datos=[];
+      var servicios={};
+
+      $(".ServiciosDiv").each(function(){
+        var position=3;
+        //Este Id viene de los subservicios agregados dinamicamente
+        if($(this)[0].id.indexOf("ServicioSub")==0){ 
+          var checked=$(this).children()[0].childNodes[1];
+           position=0;
+       }else   var checked=$(this).children()[0].childNodes[3];
+          
+          //Los que este checked sacamos las demas informacion de ese renglon
+          if(checked.checked){
+             servicios={
+                    'id_servicio'  : checked.value,
+                    'url'        : $(this).children()[1].childNodes[position].value,
+                    'Finicio'      : $(this).children()[2].childNodes[position].value,
+                    'Ffin'         : $(this).children()[3].childNodes[position].value,
+                    'Frenovacion'  : $(this).children()[4].childNodes[position].value
+                   
+               };
+             
+               datos.push(servicios);
+
+          }
+          
+
+         });
+
+      return datos;
+
+}

@@ -169,7 +169,7 @@ $Activo = $consultas->verificaSesion($sesion);
 
 
 <script type="text/javascript">
-var pagina="accesos";  //El nombre de la Pagina del lista cuando guarden a esta redireccionara
+var pagina="accesos.php";  //El nombre de la Pagina del lista cuando guarden a esta redireccionara
 var status=1;
 
      $(function(){

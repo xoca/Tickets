@@ -36,13 +36,13 @@ $query = array(
 			$FileTemp = $_FILES['Imagen']['tmp_name'][0];
 			
 
-		}/*else{
+		}else{
 			$ext=$_FILES["Imagen"]['type'];
 			$extension=explode("/",$ext);
 			$FileName = $_FILES['Imagen']['name'];
 			$FileTemp = $_FILES['Imagen']['tmp_name'];
 		
-		}*/
+		}
 	
 	
 		

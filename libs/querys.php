@@ -51,6 +51,10 @@ class Querys {
 		   		return $qry="select AreaCve,AreaDesc from area where AreaEstatus=1";
 		   		break;
 
+		   		case "CboArea":
+		   		return $qry="select concat(AreaCve,'-',AreaCorreo) clave,AreaDesc from area where AreaEstatus=1";
+		   		break;
+
 		   		case "cboPuestos":
 		   		return $qry="select pu_id,pu_descripcion nombre from puestos where pu_status=1";
 		   		break;
@@ -79,7 +83,22 @@ class Querys {
 		   		return $qry=" select *
 							from servicios A
 							left join servicios_det B on A.id=B.ser_categoria and ser_cliente=".$parametros[0]."
-							where cat_status=1 group by id ";
+							where cat_status=1";
+		   		break;
+
+		   		case "CboServisCliente":
+		   		return $qry=" select sercve,concat(cat_nombre,' - ',ser_url) nombre
+							from servicios_det B  
+							left join servicios A on A.id=B.ser_categoria and ser_cliente=".$parametros[0]."
+							where cat_status=1";
+		   		break;
+
+		   		case "CboServicios":
+		   		return $qry=" select id,cat_nombre from servicios where cat_status=1 ";
+		   		break;
+
+		   		case "CboClienteServ":
+		   		return $qry=" select sercve,ser_url from servicios_det where ser_cliente=".$parametros[0]." and ser_categoria=".$parametros[1];
 		   		break;
 
 		   		case "ListadoServicios":
@@ -183,6 +202,32 @@ class Querys {
 								select ModCve, ModSub, '' Accion from modulos C where not exists
 								(select ModCve, ModSub, Accion from seguridad D where UsuCve=".$parametros[0]." and 
 								C.ModCve = D.ModCve and C.ModSub = D.ModSub)) A order by ModNombre, ModSub, SubNombre ";
+				break;
+
+
+				case "ListadoTicket":
+				$qry=" select TicCve,TicFecha fecha,TicNombre,AreaDesc departamento,cat_nombre servicio,UsuMail correo
+						from ticket t
+						left join usuarios u on t.UsuCve=u.UsuCve 
+						left join area a on t.TicDepartamento=a.AreaCve 
+						left join servicios_det sd on t.TicServicio=sd.sercve
+						left join servicios s on sd.ser_categoria=s.id  ";
+		   		if($parametros[2]['buscar']['nombre']!="") $qry.= " and  TicNombre like '%".$parametros[2]['buscar']['nombre']."%'"; 
+				$qry.=" order by TicNombre  limit ".$parametros[0].",".$parametros[1];
+		   	
+				return $qry;
+				break;
+
+				case "ListadoTicketCount":
+				$qry=" select count(*)
+						from ticket t
+						left join usuarios u on t.UsuCve=u.UsuCve 
+						left join area a on t.TicDepartamento=a.AreaCve 
+						left join servicios_det sd on t.TicServicio=sd.sercve
+						left join servicios s on sd.ser_categoria=s.id  ";
+		   		if($parametros[2]['buscar']['nombre']!="") $qry.= " and  TicNombre like '%".$parametros[2]['buscar']['nombre']."%'"; 
+				return $qry;
+				
 				break;
 
 
