@@ -1,5 +1,6 @@
 <?
 include_once("../libs/consultas.php");
+
 $sesion = $_POST['sesion'];
 $modulo = $_POST['modulo'];
 $accion = $_POST['accion'];
@@ -7,7 +8,7 @@ $submodulo = $_POST['submodulo'];
 $consultas = new Consultas();
 //Si no esta activo lo manda al Login.
 $Activo = $consultas->verificaSesion($sesion);
-print_r($_GET);
+$empleado=$consultas->DatosEmpleado($Activo[1]);
 
 ?>
 
@@ -16,6 +17,7 @@ print_r($_GET);
                <div class="col-sm-3">
                 <strong>Nombre</strong>
                    <input type="text"class="form-control" placeholder="Nombre" name="nombre" id="nombre">
+                   <input type="hidden"  name="depto" id="depto" value="<?=$empleado[9]?>">
                 </div>
                 
                 <div class="col-md-4">
@@ -59,14 +61,17 @@ Listado de Ticket Abiertos</div>
 			<input type="hidden" name="modulos" id="modulos" value="<? print $modulo;?>">
       <input type="hidden" name="accion" id="accion" value="<? print $accion;?>">
       <input type="hidden" name="submodulo" id="submodulo" value="<? print $submodulo;?>">
-      <input type="hidden" name="Usucve" id="Usucve" value="<? print $usucve;?>">
+       <input type="hidden" name="paginared" id="paginared" value="NuevoTicket">
 </form>
 
 
 <script type="text/javascript">
 var parametros={
-        "nombre" : $("#nombre").val(),
-        "convenio"  : "-1"
+        "nombre"   : $("#nombre").val(),
+        "estatus"  : "<?=$_GET['param']?>",
+        "tipo"     : $("#RolUsuario").val(),
+        "UsuCve"   : $("#Usucve").val(),
+        "depto"    : $("#depto").val()
     };
 
 
@@ -83,7 +88,7 @@ $(document).ready(function(){
 
     var parametros={
         "nombre" : $("#nombre").val(),
-        "convenio"  : "-1"
+        "estatus"  : "<?=$_GET['param']?>"
     };
         CargarFiltro(1,"ListadoTicket",parametros);
 

@@ -6,6 +6,7 @@ $sesion = $_POST['sesion'];
 $usuario = $_POST['Usuario'];
 $correo = $_POST['correo'];
 $usucve = $_POST['Usucve'];
+$tipo = $_POST['TipoUsu'];
 
 $objDB = new Consultas();
 //Si no esta activo lo manda al Login.
@@ -54,7 +55,8 @@ $Activo = $objDB->verificaSesion($sesion);
           <p class="pull-right visible-xs">
             <button type="button" class="btn btn-primary btn-xs" data-toggle="offcanvas">button</button>
           </p>
-          <div class="panel panel-default">
+          <div class="panel panel-primary">
+             <div class="panel-heading"><h3 class="panel-title"></h3></div>
             <div class="panel-body" id='modulo'>
 
          <div class="alert alert-success" role="alert"> Bienvenido <?= $usuario; ?> </div>
@@ -77,7 +79,7 @@ $Activo = $objDB->verificaSesion($sesion);
       <input type="hidden" name="Usuario" id="Usuario" value="<? print $usuario ?>">
       <input type="hidden" name="correo" id="correo" value="<? print $correo ?>">
       <input type="hidden" name="Usucve" id="Usucve" value="<? print $usucve ?>">
-      <input type="hidden" name="Usucve" id="Usucve" value="<? print $usucve ?>">
+      <input type="hidden" name="RolUsuario" id="RolUsuario" value="<? print $tipo ?>">
     </form>
 
 

@@ -6,7 +6,10 @@ $clave = $_POST['clave'];
 $accion = $_POST['accion'];
 $submodulo = $_POST['submodulo'];
 $consultas = new Consultas();
-$funcion="Modifica".$modulo;  //Solo para modificar
+$funcion="Modifica".$modulo;  
+$required="required";
+$row['TicEstatus']=1;
+//Solo para modificar
 //Si no esta activo lo manda al Login.
 $Activo = $consultas->verificaSesion($sesion);
 //Sacar la clave del usuario logeado
@@ -16,41 +19,70 @@ $cliente = $consultas->DatosCliente($Usuario[0]);
 
 
 $row['tag']="default_Socio.jpg";
-if($accion==$funcion){
-  //Vamos a traer todos los datos del Usuario  
-    $checked="";
-    $Usuarios=$consultas->$funcion($clave);
- 
-    $clave=$Usuarios['UsuCve'];
-    $nombre=$Usuarios['UsuNombre'];
-    $apellidos=$Usuarios['UsuApellidos'];
-    $mail=$Usuarios['UsuMail'];
-    $password=$Usuarios['UsuPassword'];
-    $activo=$Usuarios['UsuActivo'];
-    $seleccionado=$Usuarios['UsuTipo'];
-    if($activo=="1") $checked="checked";
+
+//Traer clave Este Ticket ya existe
+if($clave!=""){
+    $diabled="disabled";$required="";
+    $row=$consultas->Modificacion("DatosTicket",$clave);
+    $cliente = $consultas->DatosCliente($row['UsuCve']);
+   
+    $mensaje='<div class="panel-group" id="accordion">'; $i=0;
+    $estatus=($row['TicEstatus']=="0" ? "checked disabled" : "" );
+
+  /* Los Mensajes Escritos */
+    $ticket=$consultas->DatosM("DatosTicketDetalle",$clave);
+    if($ticket[0]==1)
+    while ($fila=mysql_fetch_array($ticket[1])) {
+        $in="";  $images='';
+          /*Vamos a sacar las imagenes de Cada mensaje*/
+          $imagenes=$consultas->DatosM("ImagenesTicket",$fila[0]);
+        if($imagenes[0]==1)
+           while ($img=mysql_fetch_array($imagenes[1])) {
+            $images.='<a  href="../imagenes/tickets/'.$img[1].'" target="_blank">'.$img[1].'</a><br>';  
+        }
+
+    $mensaje.='<div class="panel panel-success"><div class="panel-heading"><h4 class="panel-title">
+         '.$fila[2].'  '.$fila[6].' '.$fila[7].'</h4></div>
+               <div id="collapse1'.$fila[0].'" class="panel-collapse collapse in">
+              <div class="panel-body">'.$fila[4].'<br>'.$images.' </div></div></div>';
+    
+  }
+
+$mensaje.="<div>";
+
 }
+
+
 ?>
  
 
-                <h3>Ticket </h3>
+              
+              <h3>Ticket </h3>
               <div class="col-md-12">
 
                 <form id="DatosClientes" action="#"  method="post">
                     <div class="row">
                     <div class="col-md-2">
                      <label>Folio</label>
-                   </div><div class="col-md-4"> <input type="text" name="clave" id="clave" disabled tabindex="1" class="form-control" placeholder="#Folio" value="<?= $clave ?>">
+                   </div><div class="col-md-4">
+                    <input type="text" name="clave" id="clave" disabled tabindex="1" class="form-control" placeholder="#Folio" value="<?= $clave ?>">
+                    <input type="hidden" name="mailUsuario" id="mailUsuario" value="<?=$Usuario[2]?>"  />
+                    <input type="hidden" name="nombreCliente" id="nombreCliente" value="<?=$cliente[1].' '.$cliente[2]?>"  />
+                    <input type="hidden" name="mailCliente" id="mailCliente" value="<?=$cliente[11]?>"  />
+                    <input type="hidden" name="tipoUsuario" id="tipoUsuario" value="<?=$Usuario[3]?>"  />
+                   
+                    <input type="hidden" name="nombreUsuario" id="nombreUsuario" value="<?=$Usuario[1]?>"  />
+                    
                   </div>
                   </div>  
                   <div class="row">
                       <div class="col-md-4">
                      <label>Nombre </label>
-                   <input type="text" name="nombre" id="nombre" value="" required class="form-control" placeholder="Nombre Completo" >
+                   <input type="text" name="nombre" id="nombre" value="<?=$row['TicNombre']?>" required class="form-control" placeholder="Nombre Completo" <?=$diabled?> >
                     </div>
                      <div class="col-md-4">
                      <label>Correo </label>
-                    <input type="email" name="email" id="email" value="" required class="form-control" placeholder="Email" >
+                    <input type="email" name="email" id="email" value="<?=$row['TicMail']?>" required class="form-control" placeholder="Email" <?=$diabled?> >
                     </div>
                   </div>
                   
@@ -58,31 +90,31 @@ if($accion==$funcion){
                   <div class="row">
                      <div class="col-md-10">
                     <label>Asunto</label>
-                    <input type="text" name="titulo" required id="titulo" tabindex="1" class="form-control" placeholder="Titulo" value="<?= $titulo;?>">
+                    <input type="text" name="titulo" required id="titulo" tabindex="1" class="form-control" <?=$diabled?> placeholder="Titulo" value="<?= $row['TicTitulo'];?>">
                     </div>
                   </div>
                    <div class="row">
                       <div class="col-md-4">
                      <label>Departamento</label>
-                      <select class="form-control" id='departamento' name='departamento' required>
-                       <?= $consultas->generaCombo("CboArea",$area,$parametro) ?>
+                      <select class="form-control" id='departamento' name='departamento' required <?=$diabled?>>
+                       <?= $consultas->generaCombo("CboArea",$row['TicDepartamento'],$parametro) ?>
                       </select>
                     </div>
                     <div class="col-md-4">
                      <label>Servicio</label>
-                      <select class="form-control" id='servicio' name='servicio' required>
+                      <select class="form-control" id='servicio' name='servicio' required <?=$diabled?>>
                         <option value="">(Seleccion)</option>
-                       <?= $consultas->generaCombo("CboServisCliente","",array($cliente[0])) ?>
+                       <?= $consultas->generaCombo("CboServisCliente",$row['TicServicio'],array($cliente[0])) ?>
                       </select>
                     </div>
 
                   </div>
-                   
-              
+
+                  
                   <div class="row">
                    <div class="col-md-12">
                      <label>Descripcion</label>
-                      <textarea class="form-control" rows="5" id="descripcion"  required></textarea>
+                      <textarea class="form-control" rows="5" id="descripcion" <?=$required?>></textarea>
                   </div></div>
                      <div class="row"> 
                  <div class="col-md-12">
@@ -91,21 +123,28 @@ if($accion==$funcion){
                         <input id="Imagen" name="Imagen[]" type="file" multiple class="file">
                         <br>
                   </div>
-                </div>     
-
+                </div>
+              <?php  if($clave!=""){ ?>
+                 <div class="row">
+                      <div class="col-md-5">
+                     <label>Marcar Como Resuelto</label>
+                      <input type="checkbox" id="status" name="status"  <?=$estatus?> >
+                    </div>
+                  </div> 
+               <? } ?>    
+                 <? if($row['TicEstatus']=="1"){ ?>
                   <div class="form-group">
                     <div class="btn-group" role="group" aria-label="Acciones">
-                       <? if($accion=="Modifica".$modulo){ ?> 
-                        <button type="button" class="btn btn-danger btn-lg" name="Eliminar" id="Eliminar">Eliminar</button>
-                         <? } ?> 
                         <button type="submit" class="btn btn-success btn-lg" name="register-submit" id="guardar" class="form-control btn btn-register">Guardar</button>
                     </div>
                     
                   </div>
+                   <? } ?>   
 
                 </form> 
-              </div>
-            </div>
+              </div> 
+              <div class="row"><br></div>
+           <?=$mensaje?>
 
               <div class="col-md-6"></div>
 
@@ -206,14 +245,15 @@ $(function(){
               var nombre=params.response["nombre"];
                   NameFile+=nombre;
                   IdFile+=params.response['clave']+",";
-                  alert(IdFile);
+                
                  $("#NombreFile").val(nombre);
                  //$(".input-group-btn").disabled();
                  $("#Imagen").attr("value",IdFile);
                // console.log('File sorted params', params);
 
     }).on('fileclear', function(e, params) {
-     campos={
+    
+       campos={
                   "accion":"Delete",
                   "nombre":$("#lbImagen").html(),
                   "clave": $("#Imagen").attr("value"),
@@ -250,28 +290,35 @@ $(function(){
    $("#DatosClientes").validate({
 
               submitHandler: function(form) {
+               
                  if($("#Imagen").attr("value")==undefined || $("#Imagen").attr("value")=="") var fotos=""
                 else {
                   var fotos=$("#Imagen").attr("value");
                     fotos=fotos+"0";
                 }
-                
+               var status=($("#status").is(":checked") ? "0" : "1");
               var accion="NuevoTicket";
-              var areas=$("#departamento").val().split("-");
+              var areas=$("#departamento").val().split("|");
               if($("#clave").val()!="") var accion="ModificaTicket";
          
               var campos = { 
               "clave"     : $("#clave").val(),   
               "usucve"    : $("#Usucve").val(), 
               "nombre"    : $("#nombre").val(),
-              "email"     : $("#email").val(), 
+              "emailTicket"   : $("#email").val(), 
               "asunto"    : $("#titulo").val(), 
               "depto"     : areas[0],
               "servicio"  : $("#servicio").val(),
               "mensaje"   : $("#descripcion").val(),
-              "correo"    : areas[1],
+              "correoArea"    : areas[1],
+              "mailUscve" : $("#mailUsuario").val(),
               "accion"    : accion,
               "modulo"    : $("#modulos").val(),
+              "NameCusto" : $("#nombreCliente").val(),
+              "mailCliente" : $("#mailCliente").val(),
+              "status"    : status,
+              "NameUsuario" : $("#nombreUsuario").val(),
+              "tipoUsuario" : $("#tipoUsuario").val(),
               "fotos"     : fotos
             
                 }; 

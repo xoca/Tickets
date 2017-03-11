@@ -52,7 +52,7 @@ class Querys {
 		   		break;
 
 		   		case "CboArea":
-		   		return $qry="select concat(AreaCve,'-',AreaCorreo) clave,AreaDesc from area where AreaEstatus=1";
+		   		return $qry="select concat(AreaCve,'|',AreaCorreo) clave,AreaDesc from area where AreaEstatus=1";
 		   		break;
 
 		   		case "cboPuestos":
@@ -211,9 +211,15 @@ class Querys {
 						left join usuarios u on t.UsuCve=u.UsuCve 
 						left join area a on t.TicDepartamento=a.AreaCve 
 						left join servicios_det sd on t.TicServicio=sd.sercve
-						left join servicios s on sd.ser_categoria=s.id  ";
+						left join servicios s on sd.ser_categoria=s.id 
+						where 1=1 ";
+				if($parametros[2]['buscar']['tipo']=="2") $qry.= " and  t.UsuCve=".$parametros[2]['buscar']['UsuCve']; 
+				if($parametros[2]['buscar']['tipo']=="3" && $parametros[2]['buscar']['depto']!="") $qry.= " and  t.TicDepartamento=".$parametros[2]['buscar']['depto']; 
+						
 		   		if($parametros[2]['buscar']['nombre']!="") $qry.= " and  TicNombre like '%".$parametros[2]['buscar']['nombre']."%'"; 
-				$qry.=" order by TicNombre  limit ".$parametros[0].",".$parametros[1];
+				if($parametros[2]['buscar']['estatus']!="") $qry.= " and  TicEstatus=".$parametros[2]['buscar']['estatus']." "; 
+				
+				$qry.=" order by TicFecha desc  limit ".$parametros[0].",".$parametros[1];
 		   	
 				return $qry;
 				break;
@@ -224,10 +230,37 @@ class Querys {
 						left join usuarios u on t.UsuCve=u.UsuCve 
 						left join area a on t.TicDepartamento=a.AreaCve 
 						left join servicios_det sd on t.TicServicio=sd.sercve
-						left join servicios s on sd.ser_categoria=s.id  ";
+						left join servicios s on sd.ser_categoria=s.id 
+						where 1=1 ";
+				if($parametros[2]['buscar']['tipo']=="2") $qry.= " and  t.UsuCve=".$parametros[2]['buscar']['UsuCve']; 
+						
 		   		if($parametros[2]['buscar']['nombre']!="") $qry.= " and  TicNombre like '%".$parametros[2]['buscar']['nombre']."%'"; 
+				if($parametros[2]['buscar']['estatus']!="") $qry.= " and  TicEstatus=".$parametros[2]['buscar']['estatus']." "; 
+				
 				return $qry;
 				
+				break;
+
+
+				case "DatosTicketDetalle":
+				return $qry="select * 
+								from ticketdetalle td
+								left join usuarios u on td.UsuCve=u.UsuCve
+								where TiCcve=".$parametros[0]."
+								order by TicFecha desc";
+				break;
+
+
+				case "DatosTicket":
+				return $qry="select * from ticket where TicCve=".$parametros[0];
+				break;
+
+				case "ImagenesTicket":
+				return $qry=" select * from archivos where id_ticketdetalle=".$parametros[0];
+				break;
+
+				case "UsuariosAdmins":
+				return $qry="select group_concat(UsuMail) mail from usuarios where UsuTipo=1";
 				break;
 
 

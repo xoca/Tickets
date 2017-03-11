@@ -45,15 +45,32 @@
 
 		function verificaUsuario($parametros)
 		{	
-			$query = "select UsuCve,UsuNombre Nombre from usuarios U where UsuMail = '".$parametros[0]."' and UsuPassword = '".$parametros[1]."' and UsuActivo = '1'";
+			$query = "select UsuCve,UsuNombre Nombre,UsuTipo tipo from usuarios U where UsuMail = '".$parametros[0]."' and UsuPassword = '".$parametros[1]."' and UsuActivo = '1'";
 			$result = mysql_query($query) or die('Consulta fallida: ' . mysql_error());
 			return $fila = mysql_fetch_row($result);			
 		}
 
+		function validarClass(){
+        if (isset($this)) {
+           return  '$this está definida ('.get_class($this).')\n';
+
+        } else {
+            return "\$this no está definida.\n";
+        }
+    
+    	}
+
 
 		function DatosUsuarios($parametros)
 		{	
-			$query = "select U.UsuCve,UsuNombre Nombre from usuarios U,sesion s where U.UsuCve=s.UsuCve and s.SesCve ='".$parametros."' ";
+			$query = "select U.UsuCve,UsuNombre Nombre,UsuMail,UsuTipo tipo from usuarios U,sesion s where U.UsuCve=s.UsuCve and s.SesCve ='".$parametros."' ";
+			$result = mysql_query($query) or die ('<div class="alert alert-danger alert-dismissible" role="alert">Ha Ocurrido un Error al tratar de generar los datos Usuarios</div>'.mysql_error()." Qry-> ".$query);
+			$fila = mysql_fetch_row($result);
+			return $fila;			
+		}
+
+		function DatosEmpleado($parametros){
+			$query = "select * from empleados e,usuarios u where u.UsuCve=e.id_usuario and  id_usuario=".$parametros;
 			$result = mysql_query($query) or die ('<div class="alert alert-danger alert-dismissible" role="alert">Ha Ocurrido un Error al tratar de generar los datos Usuarios</div>'.mysql_error()." Qry-> ".$query);
 			$fila = mysql_fetch_row($result);
 			return $fila;			

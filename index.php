@@ -85,6 +85,7 @@
 			<input type="hidden" name="Usuario" id="Usuario" value="">
 			<input type="hidden" name="correo" id="correo" value="">
       <input type="hidden" name="Usucve" id="Usucve" value="">
+      <input type="hidden" name="TipoUsu" id="TipoUsu" value="">
 		</form>
 <?footer();?>
 
@@ -113,9 +114,9 @@
 		 $query = array ( array("query" => "delete from sesion where UsuCve ='".$user_id[0]."';"),
          array("query" => "insert into sesion values('".$nsesion."', ".$user_id[0].", '".$fecha."', '".$hora."');"),
      		 );
-
+          $_SESSION['tipo']=$user_id[2];
      		 $qry=$db->transaccion($query);	
-     		
+     		 
      		 if(!$qry){
      		 	echo '<span class="label label-danger">Ha Ocurrido un Error</span>';
      		 }
@@ -127,6 +128,7 @@
 					document.frmSesion.Usuario.value = "<?print $user_id[1];?>";
           document.frmSesion.correo.value = "<?print $user;?>";
           document.frmSesion.Usucve.value = "<?print $user_id[0];?>";
+          document.frmSesion.TipoUsu.value = "<?print $user_id[2];?>";
 					document.frmSesion.submit();
 				</script>
 			<?	

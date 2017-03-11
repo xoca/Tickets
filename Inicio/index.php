@@ -85,6 +85,7 @@
 			<input type="hidden" name="Usuario" id="Usuario" value="">
 			<input type="hidden" name="correo" id="correo" value="">
       <input type="hidden" name="Usucve" id="Usucve" value="">
+      <input type="hidden" name="TipoUsu" id="TipoUsu" value="">
 		</form>
 <?footer();?>
 
@@ -115,7 +116,7 @@
      		 );
 
      		 $qry=$db->transaccion($query);	
-     		
+     		    $_SESSION['tipo']=$user_id[2];
      		 if(!$qry){
      		 	echo '<span class="label label-danger">Ha Ocurrido un Error</span>';
      		 }
@@ -127,6 +128,7 @@
 					document.frmSesion.Usuario.value = "<?print $user_id[1];?>";
           document.frmSesion.correo.value = "<?print $user;?>";
           document.frmSesion.Usucve.value = "<?print $user_id[0];?>";
+          document.frmSesion.TipoUsu.value = "<?print $user_id[2];?>";
 					document.frmSesion.submit();
 				</script>
 			<?	
